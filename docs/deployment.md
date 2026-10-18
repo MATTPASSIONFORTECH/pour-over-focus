@@ -82,7 +82,7 @@ This repo's README already points at its own Pages URL. If you fork, rename the 
 move to a custom domain, update the links in one pass:
 
 ```bash
-perl -pi -e 's/MATTPASSIONFORTECH/<your-username>/g' README.md docs/deployment.md
+perl -pi -e 's/mattpassionfortech/<your-username>/g' README.md docs/deployment.md
 git commit -am "docs: point links at the new URL" && git push
 ```
 

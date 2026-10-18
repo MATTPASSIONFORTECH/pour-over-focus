@@ -8,7 +8,7 @@
 earn cash, and spend it on café themes, fonts, backgrounds and celebration animations.
 
 <p>
-  <a href="https://MATTPASSIONFORTECH.github.io/pour-over-focus/"><b>▶ Open the live app</b></a>
+  <a href="https://mattpassionfortech.github.io/pour-over-focus/"><b>▶ Open the live app</b></a>
   &nbsp;·&nbsp;
   <a href="docs/features.md">Feature reference</a>
   &nbsp;·&nbsp;
@@ -34,7 +34,7 @@ Pick a door — everything else in this README is optional reading.
 
 | I want to… | Where to go |
 | :-- | :-- |
-| **Use the app right now** | [Open the live app](https://MATTPASSIONFORTECH.github.io/pour-over-focus/) · or [run it locally](#run-it-locally) in 10 seconds |
+| **Use the app right now** | [Open the live app](https://mattpassionfortech.github.io/pour-over-focus/) · or [run it locally](#run-it-locally) in 10 seconds |
 | **Keep it on my phone or desktop** | [Install it](#install-and-offline) — it becomes a real app icon |
 | **Understand every feature** | [Feature menu](#feature-menu) ↓ |
 | **See the exact numbers** (prices, rewards, achievements) | [docs/features.md](docs/features.md) |
@@ -315,7 +315,7 @@ git push -u origin main
 ```
 
 Then **every push to `main` deploys** to
-`https://MATTPASSIONFORTECH.github.io/pour-over-focus/` — no build command, no branch to
+`https://mattpassionfortech.github.io/pour-over-focus/` — no build command, no branch to
 keep clean. The workflow (`.github/workflows/pages.yml`) stages only the app shell
 (`index.html`, `pomodoro.html`, `sw.js`, `manifest.webmanifest`, `404.html`, `assets/`), so
 the README and docs never end up on the public site.
@@ -324,7 +324,7 @@ the README and docs never end up on the public site.
 > owner in all of them with:
 >
 > ```bash
-> perl -pi -e 's/MATTPASSIONFORTECH/<your-username>/g' README.md docs/deployment.md
+> perl -pi -e 's/mattpassionfortech/<your-username>/g' README.md docs/deployment.md
 > ```
 
 Every app path is relative, so the project sub-path (`/pour-over-focus/`) just works — the
