@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · The cup is empty</title>
+<meta name="theme-color" content="#7c9d6b">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100svh; display: grid; place-items: center;
+    padding: 2rem;
+    background: linear-gradient(180deg, #f6ead3 0%, #e8d5b5 100%);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #3f2d1e;
+  }
+  .card {
+    max-width: 30rem; width: 100%; text-align: center;
+    background: #fffaf1; border: 1px solid #e6d7bd; border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 18px 40px -24px rgba(90, 60, 30, .55);
+  }
+  .cup { font-size: 3.5rem; line-height: 1; }
+  h1 { margin: 1rem 0 .5rem; font-size: 1.5rem; letter-spacing: -.01em; }
+  p { margin: 0 0 1.75rem; color: #6b5540; }
+  code {
+    font-size: .85em; background: #f1e5cf; border-radius: 6px;
+    padding: .15em .45em; word-break: break-all;
+  }
+  a.home {
+    display: inline-block; text-decoration: none;
+    background: #7c9d6b; color: #fff; font-weight: 600;
+    padding: .8rem 1.4rem; border-radius: 999px;
+    box-shadow: 0 10px 22px -12px rgba(70, 100, 55, .9);
+  }
+  a.home:hover { background: #6b8c5b; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="cup">☕</div>
+    <h1>Nothing brewing at this address</h1>
+    <p>The page <code id="path">you asked for</code> isn't on the menu. It may have moved, or the link has a typo.</p>
+    <a class="home" href="./">Back to the café</a>
+  </main>
+  <script>
+    // show the requested path, safely (textContent, never innerHTML)
+    try { document.getElementById("path").textContent = location.pathname; } catch (e) {}
+  </script>
+</body>
+</html>

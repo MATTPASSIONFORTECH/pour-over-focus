@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+# Publishes the app to https://<owner>.github.io/<repo>/ on every push to main.
+# Only the app shell is staged into _site — README, docs and workflows stay off
+# the published site. All app paths are relative, so a project subpath works.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Stage the app shell
+        run: |
+          mkdir -p _site
+          cp index.html pomodoro.html sw.js manifest.webmanifest 404.html _site/
+          cp -R assets _site/assets
+          touch _site/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

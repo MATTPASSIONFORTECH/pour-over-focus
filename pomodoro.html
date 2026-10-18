@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glass Timer · Minimalist Pomodoro</title>
+
+<!-- ============================================================
+     GLASS TIMER — a single-file, minimalist pomodoro.
+     ~98% HTML/CSS, ~2% JavaScript. Everything is inline:
+     no frameworks, no external assets, fully offline-capable.
+
+     The "Download Web App" button in the footer saves this very
+     page (document.documentElement.outerHTML) as my-app.html —
+     a complete, standalone copy you can keep forever.
+     ============================================================ -->
+
+<style>
+/* ---------- 1. THEME (CSS variables) ---------- */
+:root{
+  /* typography */
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+  /* ink + text */
+  --ink:#2b2a3e;
+  --muted:#8b89a3;
+
+  /* glass surfaces */
+  --glass:rgba(255,255,255,.42);
+  --glass-strong:rgba(255,255,255,.62);
+  --stroke:rgba(255,255,255,.75);
+
+  /* accents */
+  --accent:#7c6cf0;
+  --accent-soft:rgba(124,108,240,.14);
+  --warm:#ff9d6c;
+
+  /* depth */
+  --shadow:0 30px 70px -24px rgba(90,70,180,.4);
+  --radius:28px;
+
+  /* durations (minutes) — tweak here to re-theme the whole app */
+  --focus-min:25;
+  --short-min:5;
+  --long-min:15;
+}
+
+/* ---------- 2. BASE ---------- */
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{
+  min-height:100vh;min-height:100dvh;
+  display:grid;place-items:center;
+  font-family:var(--font);color:var(--ink);
+  padding:24px;
+  overflow-x:hidden;
+  /* soft pastel gradient + subtle noise-free backdrop */
+  background:
+    radial-gradient(120% 120% at 15% 10%,#f9e3f0 0%,transparent 55%),
+    radial-gradient(120% 120% at 85% 20%,#dce7ff 0%,transparent 55%),
+    radial-gradient(120% 120% at 55% 100%,#ddf4e8 0%,transparent 60%),
+    linear-gradient(150deg,#fdf3f6,#eef1ff 55%,#eefaf3);
+  background-attachment:fixed;
+}
+
+/* drifting color orbs behind the glass (pure decoration) */
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.55;z-index:0;pointer-events:none}
+.orb-1{width:420px;height:420px;top:-120px;left:-100px;background:#ffb9dc;animation:drift 14s ease-in-out infinite}
+.orb-2{width:380px;height:380px;bottom:-110px;right:-90px;background:#a7c4ff;animation:drift 18s ease-in-out infinite reverse}
+.orb-3{width:300px;height:300px;top:45%;left:58%;background:#b7e8cd;animation:drift 16s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}}
+
+/* ---------- 3. GLASS CONTAINER ---------- */
+.glass{
+  position:relative;z-index:1;
+  width:100%;max-width:420px;
+  padding:34px 30px 26px;
+  border-radius:var(--radius);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  backdrop-filter:blur(22px) saturate(160%);
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:20px;
+}
+
+/* ---------- 4. HEADER ---------- */
+header{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;flex:none;
+  display:grid;place-items:center;font-size:24px;
+  border-radius:15px;
+  background:var(--glass-strong);
+  border:1px solid var(--stroke);
+  box-shadow:0 8px 18px -8px rgba(90,70,180,.35);
+}
+header h1{font-size:19px;letter-spacing:.2px}
+header p{font-size:12.5px;color:var(--muted);font-weight:500}
+
+/* ---------- 5. MODE TABS ---------- */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:5px;border-radius:15px;background:rgba(255,255,255,.28);border:1px solid var(--stroke)}
+.tab{
+  padding:9px 4px;border:none;border-radius:11px;
+  font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);
+  background:transparent;cursor:pointer;
+  transition:background .25s,color .25s,box-shadow .25s;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{
+  background:var(--glass-strong);color:var(--ink);
+  box-shadow:0 6px 14px -8px rgba(90,70,180,.4);
+}
+
+/* ---------- 6. TIMER DIAL ---------- */
+.dial{position:relative;width:min(260px,72vw);aspect-ratio:1;margin:2px auto 0}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;
+  transform:rotate(-90deg)}                    /* start progress at 12 o'clock */
+.dial circle{fill:none;stroke-width:10;stroke-linecap:round}
+.track{stroke:rgba(255,255,255,.5)}
+.progress{
+  stroke:url(#grad);                          /* accent → warm gradient ring */
+  stroke-dasharray:565.5;                     /* circumference of r=90 */
+  stroke-dashoffset:0;
+  transition:stroke-dashoffset .5s linear;
+  filter:drop-shadow(0 4px 10px rgba(124,108,240,.45));
+}
+.time-wrap{
+  position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:4px;
+}
+.time{font-size:56px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.phase{font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+/* completion pulse on the ring */
+.dial.ringing .progress{animation:ringPulse 1s ease infinite}
+@keyframes ringPulse{0%,100%{filter:drop-shadow(0 0 4px rgba(124,108,240,.5))}50%{filter:drop-shadow(0 0 16px rgba(124,108,240,.9))}}
+
+/* ---------- 7. SESSION DOTS ---------- */
+.sessions{display:flex;justify-content:center;gap:9px;min-height:12px}
+.dot{width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);
+  transition:background .3s,transform .3s}
+.dot.filled{background:var(--warm);transform:scale(1.15);
+  box-shadow:0 0 10px rgba(255,157,108,.8)}
+
+/* ---------- 8. CONTROLS ---------- */
+.controls{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:10px}
+.btn{
+  padding:14px 10px;border:none;border-radius:16px;
+  font:inherit;font-size:14px;font-weight:800;cursor:pointer;
+  transition:transform .18s,box-shadow .25s,background .25s,filter .2s;
+}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink)}
+.btn.ghost:hover{transform:translateY(-2px);box-shadow:0 10px 20px -12px rgba(90,70,180,.4)}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),#5b4bd8);
+  color:#fff;box-shadow:0 12px 24px -10px rgba(124,108,240,.7);
+}
+.btn.primary:hover{transform:translateY(-2px);filter:brightness(1.06);
+  box-shadow:0 16px 30px -10px rgba(124,108,240,.8)}
+
+/* ---------- 9. FOOTER + DOWNLOAD ---------- */
+footer{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;
+  border-top:1px solid rgba(255,255,255,.5);padding-top:18px}
+.footnote{font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* the premium download button: glass, glow on hover, shine sweep */
+.download{
+  position:relative;overflow:hidden;
+  width:100%;padding:15px 18px;border:none;border-radius:16px;
+  font:inherit;font-size:14.5px;font-weight:800;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,#ffb27d,var(--warm) 45%,#ff7d6c);
+  box-shadow:0 12px 26px -10px rgba(255,125,108,.65);
+  transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .3s,filter .25s;
+}
+.download:hover{
+  transform:translateY(-3px) scale(1.01);
+  filter:brightness(1.05);
+  box-shadow:0 18px 38px -12px rgba(255,125,108,.85);
+}
+.download:active{transform:translateY(0) scale(.97)}
+/* light sweep that crosses the button on hover */
+.download::after{
+  content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-20deg);
+  transition:left .55s ease;
+}
+.download:hover::after{left:130%}
+/* tiny toast feedback after a successful save */
+.toast{
+  font-size:12px;font-weight:700;color:var(--ink);
+  background:var(--glass-strong);border:1px solid var(--stroke);
+  padding:9px 14px;border-radius:99px;
+  opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .3s,transform .3s;
+}
+.toast.show{opacity:1;transform:none}
+
+/* ---------- 10. RESPONSIVE ---------- */
+@media (max-width:460px){
+  .glass{padding:26px 18px 20px;border-radius:24px}
+  .time{font-size:46px}
+}
+</style>
+</head>
+
+<body>
+<!-- decorative background -->
+<div class="orb orb-1" aria-hidden="true"></div>
+<div class="orb orb-2" aria-hidden="true"></div>
+<div class="orb orb-3" aria-hidden="true"></div>
+
+<main class="glass">
+  <!-- ===== header ===== -->
+  <header>
+    <span class="logo" aria-hidden="true">🍅</span>
+    <div>
+      <h1>Glass Timer</h1>
+      <p>Minimalist pomodoro · one task at a time</p>
+    </div>
+  </header>
+
+  <!-- ===== mode tabs: focus / short break / long break ===== -->
+  <nav class="tabs" role="tablist" aria-label="Timer mode">
+    <button class="tab active" role="tab" aria-selected="true" data-mode="focus">Focus</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="short">Short Break</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="long">Long Break</button>
+  </nav>
+
+  <!-- ===== the dial: gradient ring + big clock ===== -->
+  <div class="dial" id="dial">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#7c6cf0"/>
+          <stop offset="100%" stop-color="#ff9d6c"/>
+        </linearGradient>
+      </defs>
+      <circle class="track" cx="100" cy="100" r="90"></circle>
+      <circle class="progress" id="progress" cx="100" cy="100" r="90"></circle>
+    </svg>
+    <div class="time-wrap">
+      <div class="time" id="time">25:00</div>
+      <div class="phase" id="phase">Ready</div>
+    </div>
+  </div>
+
+  <!-- ===== completed-session dots (4 = one full cycle) ===== -->
+  <div class="sessions" id="sessions" role="img" aria-label="0 of 4 focus sessions completed">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  </div>
+
+  <!-- ===== controls ===== -->
+  <div class="controls">
+    <button class="btn ghost" id="reset">Reset</button>
+    <button class="btn primary" id="toggle">Start</button>
+    <button class="btn ghost" id="skip">Skip</button>
+  </div>
+
+  <!-- ===== footer: note + the "permanent download" feature ===== -->
+  <footer>
+    <p class="footnote">25 · 5 · 15 — the classic rhythm. Keep your copy forever.</p>
+    <button class="download" id="download" type="button">⬇&nbsp; Download Web App</button>
+    <span class="toast" id="toast" role="status">my-app.html saved — fully offline ☕</span>
+  </footer>
+</main>
+
+<script>
+/* ============================================================
+   Tiny timer core — everything else is markup & CSS.
+   ============================================================ */
+const MODES = {                                  // minutes per mode (from CSS vars)
+  focus:{min:+getComputedStyle(document.documentElement).getPropertyValue('--focus-min'), next:'short', label:'Focus'},
+  short:{min:+getComputedStyle(document.documentElement).getPropertyValue('--short-min'),next:'long',  label:'Short Break'},
+  long: {min:+getComputedStyle(document.documentElement).getPropertyValue('--long-min'), next:'focus', label:'Long Break'}
+};
+const $ = id => document.getElementById(id);
+const ring = $('progress');
+const CIRC = 2 * Math.PI * 90;                   // ring circumference (r=90)
+
+let mode='focus', total=MODES.focus.min*60, left=total,
+    end=0, timer=null, cycle=0, running=false;
+
+const fmt = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+function render(){                               // clock + ring + tab state
+  $('time').textContent = fmt(left);
+  $('phase').textContent = running ? MODES[mode].label : 'Ready';
+  ring.style.strokeDashoffset = CIRC * (1 - left/total);
+  document.title = (running ? fmt(left)+' · ' : '') + MODES[mode].label;
+}
+function tick(){                                 // 1s heartbeat (drift-free via end-time)
+  left = Math.max(0, Math.round((end - Date.now())/1000));
+  if(left === 0) finish();
+  render();
+}
+function start(){ running=true; end = Date.now()+left*1000; timer=setInterval(tick,250);
+  $('toggle').textContent='Pause'; render(); }
+function pause(){ running=false; clearInterval(timer); $('toggle').textContent='Start'; render(); }
+function finish(){                               // cycle ends → auto-advance to the break
+  running=false; clearInterval(timer);
+  $('dial').classList.add('ringing');            // pulse the ring briefly
+  setTimeout(()=>$('dial').classList.remove('ringing'), 2500);
+  beep();
+  if(mode==='focus'){ cycle=(cycle+1)%4; markDots(); }   // 4 focus rounds → long break
+  switchMode(MODES[mode].next);
+  $('toggle').textContent='Start';
+}
+function switchMode(m){ mode=m; total=MODES[m].min*60; left=total; pause();
+  document.querySelectorAll('.tab').forEach(t=>{
+    const on = t.dataset.mode===m;
+    t.classList.toggle('active',on); t.setAttribute('aria-selected',on);
+  });
+  render();
+}
+function markDots(){                             // fill one dot per completed focus round
+  [...$('sessions').children].forEach((d,i)=>d.classList.toggle('filled', i<cycle));
+  $('sessions').setAttribute('aria-label', cycle+' of 4 focus sessions completed');
+}
+function beep(){                                 // two-tone chime, no assets needed
+  const c=new (window.AudioContext||window.webkitAudioContext)();
+  [0,180].forEach((d,i)=>{ const o=c.createOscillator(), g=c.createGain();
+    o.frequency.value=i?880:660; o.type='sine';
+    g.gain.setValueAtTime(.001,c.currentTime+d); g.gain.exponentialRampToValueAtTime(.3,c.currentTime+d+.02);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d+.5);
+    o.connect(g).connect(c.destination); o.start(c.currentTime+d); o.stop(c.currentTime+d+.55); });
+}
+
+/* ============================================================
+   The "Permanent Download" — save this page as a standalone app.
+   ============================================================ */
+$('download').addEventListener('click', ()=>{
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;  // full source
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'my-app.html';                    // a fully functional offline copy
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  const t=$('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400);
+});
+
+/* wiring */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchMode(t.dataset.mode)));
+$('toggle').addEventListener('click',()=> running?pause():start());
+$('reset').addEventListener('click',()=>{ left=total; pause(); });
+$('skip').addEventListener('click',()=>{ if(mode==='focus'){ cycle=(cycle+1)%4; markDots(); } switchMode(MODES[mode].next); });
+render();
+</script>
+</body>
+</html>
