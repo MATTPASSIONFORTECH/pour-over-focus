@@ -20,6 +20,7 @@ earn cash, and spend it on café themes, fonts, backgrounds and celebration anim
   <img alt="Works offline" src="https://img.shields.io/badge/offline-first-7c9d6b">
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-0-7c9d6b">
   <img alt="MIT licensed" src="https://img.shields.io/badge/license-MIT-7c9d6b">
+  <a href="https://github.com/MATTPASSIONFORTECH/pour-over-focus/actions/workflows/pages.yml"><img alt="Deploy status" src="https://github.com/MATTPASSIONFORTECH/pour-over-focus/actions/workflows/pages.yml/badge.svg"></a>
 </p>
 
 <sub>Two files of HTML, no frameworks, no build step, no account, no tracking.</sub>
