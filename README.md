@@ -38,6 +38,7 @@ Pick a door — everything else in this README is optional reading.
 | **Use the app right now** | [Open the live app](https://mattpassionfortech.github.io/pour-over-focus/) · or [run it locally](#run-it-locally) in 10 seconds |
 | **Keep it on my phone or desktop** | [Install it](#install-and-offline) — it becomes a real app icon |
 | **Understand every feature** | [Feature menu](#feature-menu) ↓ |
+| **Learn the buttons and shortcuts** | [Keyboard and controls](#keyboard-and-controls) |
 | **See the exact numbers** (prices, rewards, achievements) | [docs/features.md](docs/features.md) |
 | **Publish my own copy on GitHub Pages** | [Deploy to GitHub Pages](#deploy-to-github-pages) · [in depth](docs/deployment.md) |
 | **Change themes, achievements or mechanics** | [docs/architecture.md](docs/architecture.md#extending) |
@@ -95,11 +96,14 @@ your exact selection into the cup (colour, creamer swirl, topping garnish) — *
 <br>
 
 After the last step, the app brews for **20 seconds** by default (adjustable 5–120s) while
-the cup fills and steam rises. Click **☕ Brew** to skip ahead — nothing is locked, the
-ritual is there to give your brain a clean hand-off into focus mode.
+the cup fills and steam rises. Press **☕ Start Now** to serve it early, then a short pour
+animation plays on the way to the timer — **⏭ Skip** jumps straight past it. Nothing is
+locked; the ritual is there to give your brain a clean hand-off into focus mode.
 
 - Brew length is a setting, not a constant (`Settings → Brew time`).
-- Sound effects are synthesized live with the Web Audio API — no audio files ship with the app.
+- If your system asks for reduced motion, the pour animation is skipped automatically.
+- Sound effects are synthesized live with the Web Audio API — no audio files ship with the
+  app. Toggle them with 🔊 in the header.
 - The brew has a real progress bar driven by the same clock as the timer, so it never lags.
 
 </details>
@@ -109,7 +113,7 @@ ritual is there to give your brain a clean hand-off into focus mode.
 ## The focus timer
 
 <details>
-<summary><b>Drift-free rounds, breaks, rounds, PiP and notifications</b></summary>
+<summary><b>Drift-free rounds, breaks, PiP and notifications</b></summary>
 
 <br>
 
@@ -120,8 +124,8 @@ ritual is there to give your brain a clean hand-off into focus mode.
 | **Controls** | Pause / resume, skip the current phase, end the session early |
 | **Reload recovery** | The live session is snapshotted; reload or reopen and the timer resumes where it should be |
 | **Space bar** | Pause / resume when the timer screen is in front (and no button has focus) |
-| **PiP window** | ⧉ opens the timer in a floating always-on-top window (Chrome / Edge, Document Picture-in-Picture) |
-| **Notifications** | 🔔 nudges you when a round ends — but only while the tab is hidden, so it never nags you twice |
+| **PiP window** | ⧉ opens the timer in a floating always-on-top window (Chrome / Edge, Document Picture-in-Picture); in other browsers the button is disabled |
+| **Notifications** | 🔔 nudges you when a round ends — but only while the tab is hidden, so it never nags you twice. Permission is requested when you start a session |
 | **Background audio** | 🎵 café ambience generated from filtered brown noise with a slow breathing LFO |
 
 </details>
@@ -150,18 +154,19 @@ quote from the café wall.
 ## The shop
 
 <details>
-<summary><b>19 cosmetics and 5 celebration tiers</b></summary>
+<summary><b>19 cosmetics across 4 categories</b></summary>
 
 <br>
 
 | Category | What it changes | Items |
 | :-- | :-- | :-- |
-| **Skins** | The whole palette | Cozy Brown Café *(free)*, Matcha Mode $20, Dark Roast $20, Espresso Black $15, Sunset Glow $25 |
-| **Fonts** | Typography | Modern Sans *(free)*, Cute Handwritten $12, Elegant Serif $12, Pixel Retro $15 |
-| **Backgrounds** | Animated scenes | Coffee Steam *(free)*, Bookshelf $25, City Patio $35, Rainy Window $40, Fireplace $45 |
-| **Celebrations** | The end-of-round payoff | Steam $10, Confetti $25, Golden Glow $50, Fireworks $75, Café Festival $120 |
+| **Skins** | The whole palette | Cozy Brown Café *(free)*, Pastel Matcha Mode $20, Dark Roast Mode $20, Espresso Black Minimal $15, Sunset Café Glow $25 |
+| **Fonts** | Typography | Modern Minimalist Sans *(free)*, Cute Handwritten $12, Elegant Serif $12, Pixel Retro $15 |
+| **Backgrounds** | Animated scenes | Animated Coffee Steam *(free)*, Bookshelf Café $25, City Café Patio $35, Rainy Café Window $40, Fireplace Café $45 |
+| **Celebrations** | The end-of-session payoff | Basic Steam $10, Confetti Sprinkle $25, Golden Brew Glow $50, Fireworks Roast $75, Legendary Café Festival $120 |
 
-Every item previews on hover and applies instantly on purchase, and purchases persist across
+Try before you buy: each item has a preview button (themes revert when you close the shop).
+Purchases apply instantly — new celebrations are equipped automatically — and persist across
 reloads. Prices and rarities: **[docs/features.md](docs/features.md#the-shop)**.
 
 </details>
@@ -181,11 +186,11 @@ reloads. Prices and rarities: **[docs/features.md](docs/features.md#the-shop)**.
 | 🍵 Round Regular | Finish 10 focus rounds |
 | 🏆 Barista Legend | Finish 50 focus rounds |
 | 💰 $100 Earned | Accumulate $100 in lifetime earnings |
-| 🛍️ Big Spender | Own 3 shop items |
+| 🛍️ Big Spender | Buy 3 shop items (free defaults don't count) |
 | 🥐 Half Dozen | Complete 5 full sessions |
 | 🔥 On a Roll | Reach a 3-day streak |
 | ⚡ Weekly Warrior | Reach a 7-day streak |
-| 🎬 Brewed With Intention | Run a session through the full brew ritual |
+| 🎬 Brewed With Intention | Start your first session from the brew screen |
 | 🎆 Premium Patron | Buy the Legendary Café Festival animation |
 
 Open 🏆 in the header to see locked and unlocked badges side by side.
@@ -202,8 +207,8 @@ Open 🏆 in the header to see locked and unlocked badges side by side.
 <br>
 
 The 🏅 leaderboard ranks brewers **today** or **all-time** by focus minutes, highlighting
-your own row. It is powered by a tiny optional backend (`api/leaderboard`, `api/stream` over
-Server-Sent Events, `api/report`), so ranks update live while the modal is open.
+your own row. It is powered by a tiny optional backend (`api/health`, `api/leaderboard`,
+`api/stream` over Server-Sent Events, `api/report`), so ranks update live while the modal is open.
 
 You can finish a round with no server at all: reporting is fire-and-forget, and the panel
 simply shows **“○ Offline — start the server”** instead of failing. GitHub Pages is static,
@@ -246,7 +251,8 @@ asks the browser for persistent storage so it isn't evicted.
 <br>
 
 [`pomodoro.html`](pomodoro.html) is a deliberately minimal, glass-styled 25/5/15 Pomodoro:
-a dial, start/pause/reset/skip, and session dots — about 2% JavaScript. Its **⬇ Download Web
+a dial, Focus / Short Break / Long Break tabs, start/pause/reset/skip, and four session dots —
+almost entirely HTML and CSS, with a small inline script. Its **⬇ Download Web
 App** button saves the current page as a standalone `my-app.html` you can keep forever and
 open from disk, with no server and no install.
 
@@ -270,7 +276,7 @@ once you have opened the app it works offline: `/pomodoro.html`.
 | **Service worker** | `sw.js` — precaches both pages, icons, splash art and drink images on install |
 | **Navigations** | Network-first, cached **per URL**, falling back to that page and then the app shell, so one page can never overwrite another's offline copy |
 | **Assets** | Cache-first, and only `2xx` responses are stored — a transient 404 can't get pinned in the cache |
-| **Updates** | Bump `VERSION` in `sw.js` to publish a new shell; stale caches are deleted on activate and the app re-checks hourly |
+| **Updates** | Bump `VERSION` in `sw.js` to publish a new shell; stale caches are deleted on activate, and the app checks for a new version when you return to it (at most once an hour) |
 | **Install button** | ⬇ appears in the header when the browser offers a prompt; on iOS it explains **Share → Add to Home Screen** instead of doing nothing |
 
 **Desktop:** use the ⬇ button, or your browser's *Install app* menu entry.
@@ -281,6 +287,22 @@ Once installed it opens without a browser frame and works with the network off �
 the second page and the shop art. Deep dive: **[docs/deployment.md](docs/deployment.md#offline-and-caching)**.
 
 </details>
+
+---
+
+## Keyboard and controls
+
+| Key / button | What it does |
+| :-- | :-- |
+| <kbd>Space</kbd> | Pause / resume — on the timer screen, when no button has focus |
+| <kbd>Esc</kbd> | Close the shop, achievements or leaderboard; skip a playing celebration |
+| <kbd>Enter</kbd> | Save your nickname in the leaderboard |
+| 🎵 · 🔊 · 🔔 | Café ambience · brew sound effects · round-end notifications (on/off) |
+| ⧉ | Pop the timer out into a floating window (Chromium browsers) |
+| 🛍️ · 🏆 · 🏅 | Shop · achievements · leaderboard |
+| ⬇️ | Install the app (shown only when the browser offers it, or on iOS) |
+
+The Glass Timer page is mouse/touch only — it has no keyboard shortcuts.
 
 ---
 
@@ -305,21 +327,36 @@ but installing and offline caching need a real origin.
 
 ## Deploy to GitHub Pages
 
-The repo ships with a workflow that publishes the app on every push to `main`.
+The repo ships with a workflow (`.github/workflows/pages.yml`) that publishes the app on
+every push to `main`, and can also be run by hand from the **Actions** tab. It stages only the
+app shell (`index.html`, `pomodoro.html`, `sw.js`, `manifest.webmanifest`, `404.html`,
+`assets/`), so the README and docs never end up on the public site.
+
+### First-time setup (a new copy or fork)
+
+Do this once, when the repository isn't on GitHub yet:
 
 ```bash
-# 1. Create the repository (once)
+# 1. Create the repository and push it
 git remote add origin https://github.com/MATTPASSIONFORTECH/pour-over-focus.git
 git push -u origin main
 
 # 2. In GitHub: Settings → Pages → Build and deployment → Source: "GitHub Actions"
 ```
 
-Then **every push to `main` deploys** to
-`https://mattpassionfortech.github.io/pour-over-focus/` — no build command, no branch to
-keep clean. The workflow (`.github/workflows/pages.yml`) stages only the app shell
-(`index.html`, `pomodoro.html`, `sw.js`, `manifest.webmanifest`, `404.html`, `assets/`), so
-the README and docs never end up on the public site.
+The app is then live at `https://mattpassionfortech.github.io/pour-over-focus/` — no build
+command, no branch to keep clean.
+
+### Updating an existing deployment
+
+The repo and Pages are already set up, so there is nothing to configure — just push:
+
+1. Make your change.
+2. If you changed anything the service worker caches (either page, `sw.js`, the manifest or
+   `assets/`), bump `VERSION` in [`sw.js`](sw.js) — e.g. `pour-over-focus-v9` →
+   `pour-over-focus-v10` — so installed copies drop their old cache.
+3. Push to `main`. The workflow redeploys automatically; installed apps pick up the new
+   version the next time they're opened online.
 
 > **Forking or renaming the repo?** The links above point at this repo's Pages URL. Swap the
 > owner in all of them with:
@@ -353,7 +390,9 @@ pour-over-focus/
 │   ├── features.md            # complete feature reference (tables, prices, mechanics)
 │   ├── deployment.md          # hosting, Pages, offline/caching, leaderboard backend
 │   └── architecture.md        # how the code is organised, and how to extend it
-├── .github/workflows/pages.yml# deploy to GitHub Pages on push to main
+├── .github/workflows/pages.yml # deploy to GitHub Pages on push to main
+├── .nojekyll                  # stops Jekyll processing on branch-based Pages deploys
+├── .gitignore
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -368,7 +407,7 @@ pour-over-focus/
 | [docs/features.md](docs/features.md) | you want every screen, option, price and mechanic spelled out |
 | [docs/deployment.md](docs/deployment.md) | you are hosting it, debugging caching, or wiring the leaderboard |
 | [docs/architecture.md](docs/architecture.md) | you are editing the code — state shape, rendering, service worker, how to add content |
-| [CHANGELOG.md](CHANGELOG.md) | you want to know what changed in this restructure |
+| [CHANGELOG.md](CHANGELOG.md) | you want to know what changed between versions |
 
 ---
 
@@ -387,9 +426,12 @@ pour-over-focus/
 
 - **Live leaderboard needs a backend.** On static hosting the panel shows an offline state;
   everything else works normally. See [deployment docs](docs/deployment.md#optional-the-leaderboard-backend).
-- **Picture-in-Picture needs Chromium** (Document PiP API). Elsewhere the ⧉ button is a no-op
-  and the timer stays in the tab.
-- **iOS installs are manual** — Safari has no install prompt, so use Share → Add to Home Screen.
+- **Picture-in-Picture needs Chromium** (Chrome / Edge, Document PiP API). Elsewhere the ⧉
+  button is disabled and the timer stays in the tab.
+- **iOS installs are manual** — Safari has no install prompt, so the ⬇️ button explains
+  Share → Add to Home Screen instead.
+- **Notifications need permission** and a browser with the Notification API; if either is
+  missing, rounds still end normally, just without the system nudge.
 - **`.webmanifest` MIME matters.** Most hosts serve `application/manifest+json`; if a host
   returns `application/octet-stream`, Chrome ignores the manifest and the app won't install.
 

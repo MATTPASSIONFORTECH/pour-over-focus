@@ -152,6 +152,122 @@ input,select{font-family:inherit;color:inherit}
 #bgScene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:var(--scene-opacity);transition:opacity .6s}
 #bgScene .scene{position:absolute;inset:0;display:none}
 
+/* A drink-specific animated layer under the interface. It follows the order
+   choice without replacing the user's selected café scene or theme. */
+#drinkScene{position:absolute;inset:0;overflow:hidden}
+#drinkScene .drink-layer{position:absolute;inset:0;display:none;overflow:hidden}
+body[data-drink="coffee"] #drinkScene .coffee-bg,
+body[data-drink="matcha"] #drinkScene .matcha-bg,
+body[data-drink="espresso"] #drinkScene .espresso-bg{display:block}
+#drinkScene i{position:absolute;display:block;pointer-events:none}
+/* Coffee: brighter caramel-and-cream currents with visible rising steam. */
+.coffee-bg .liquid-ribbon{width:82vw;height:116vh;top:27%;left:-22%;border-radius:45% 55% 61% 39%;
+  background:linear-gradient(145deg,transparent 8%,rgba(133,76,39,.34) 24%,rgba(221,146,70,.82) 42%,rgba(255,226,164,.8) 51%,rgba(190,106,48,.72) 63%,rgba(133,76,39,.2) 76%,transparent 90%);
+  filter:blur(11px);animation:coffeeFlow 14s ease-in-out infinite alternate}
+.coffee-bg .ribbon-b{width:72vw;height:100vh;top:39%;left:38%;opacity:.9;animation-delay:-6s;animation-duration:18s;transform:rotate(22deg)}
+.coffee-bg .coffee-vapor{bottom:-16%;width:12vw;max-width:120px;height:62vh;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(255,253,235,.84),rgba(255,249,230,.3) 38%,transparent 74%);
+  filter:blur(8px);opacity:0;animation:vaporRise 9s ease-in-out infinite}
+.coffee-bg .vapor-a{left:18%;animation-delay:-1s}.coffee-bg .vapor-b{left:48%;animation-delay:-4s}.coffee-bg .vapor-c{left:78%;animation-delay:-7s}
+@keyframes coffeeFlow{0%{transform:translate3d(-7vw,-4vh,0) rotate(-18deg) scale(.9,1)}50%{transform:translate3d(9vw,4vh,0) rotate(-8deg) scale(1.12,.93)}100%{transform:translate3d(20vw,-4vh,0) rotate(6deg) scale(1.02,1.06)}}
+@keyframes vaporRise{0%{transform:translate3d(0,10vh,0) scaleX(.7);opacity:0}25%{opacity:.9}100%{transform:translate3d(7vw,-115vh,0) scaleX(1.5);opacity:0}}
+/* Matcha: a brighter, soft lime-sage swirl that drifts rather than splashes. */
+.matcha-bg .matcha-ribbon{width:108vw;height:58vh;left:-17%;top:37%;border-radius:52% 48% 58% 42%;
+  background:linear-gradient(155deg,transparent 3%,rgba(81,132,54,.4) 20%,rgba(149,193,97,.76) 42%,rgba(224,245,168,.78) 51%,rgba(115,161,68,.72) 64%,transparent 94%);
+  filter:blur(14px);animation:matchaFlow 13s ease-in-out infinite alternate}
+.matcha-bg .ribbon-b{width:84vw;height:48vh;left:30%;top:54%;opacity:.85;animation-delay:-6s;animation-duration:17s}
+@keyframes matchaFlow{0%{transform:translate3d(-7vw,3vh,0) rotate(-12deg) scale(.9,1)}50%{transform:translate3d(8vw,-6vh,0) rotate(1deg) scale(1.12,.92)}100%{transform:translate3d(18vw,3vh,0) rotate(12deg) scale(1,.98)}}
+/* Espresso: larger, glossy amber drops with brighter highlights and a soft glow. */
+.espresso-bg .drop{width:15px;height:20px;border-radius:55% 45% 60% 40%;
+  background:radial-gradient(ellipse at 28% 24%,rgba(255,247,201,.98) 0 10%,rgba(247,186,92,.95) 27%,rgba(190,102,45,.88) 58%,rgba(90,43,22,.56) 88%);
+  box-shadow:0 4px 22px rgba(160,83,33,.3),0 0 12px rgba(247,186,92,.35);opacity:0;animation:espressoDrift 6s ease-in-out infinite}
+.espresso-bg .d1{left:12%;top:24%;animation-delay:-1s}.espresso-bg .d2{left:28%;top:67%;width:13px;height:17px;animation-delay:-4s}
+.espresso-bg .d3{left:43%;top:16%;width:22px;height:28px;animation-delay:-2s}.espresso-bg .d4{left:61%;top:73%;animation-delay:-5s}
+.espresso-bg .d5{left:77%;top:33%;width:14px;height:18px;animation-delay:-3s}.espresso-bg .d6{left:90%;top:58%;width:19px;height:24px;animation-delay:-1s}
+.espresso-bg .d7{left:21%;top:43%;width:12px;height:16px;animation-delay:-2.5s}.espresso-bg .d8{left:69%;top:13%;width:13px;height:17px;animation-delay:-4.5s}
+@keyframes espressoDrift{0%,100%{transform:translate3d(0,12px,0) rotate(-12deg) scale(.88);opacity:0}22%{opacity:.9}55%{transform:translate3d(17px,-24px,0) rotate(10deg) scale(1.12);opacity:.75}82%{opacity:0}}
+@media(prefers-reduced-motion:reduce){#drinkScene i{animation:none!important;opacity:.58}}
+
+/* Recipe accents: milk sets the silky base, creamer adds a flavor ribbon,
+   and toppings contribute only their own small signature particles. */
+#ingredientScene{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+#ingredientScene .milk-effect,#ingredientScene .creamer-effect{position:absolute;inset:0}
+#ingredientScene .milk-flow,#ingredientScene .creamer-flow{position:absolute;display:block;border-radius:48% 52% 60% 40%;pointer-events:none}
+#ingredientScene .milk-flow{width:102vw;height:56vh;left:-22%;top:46%;
+  background:linear-gradient(138deg,transparent 6%,var(--milk-tone) 34%,var(--milk-highlight) 49%,var(--milk-tone) 61%,transparent 89%);
+  filter:blur(9px);opacity:.82;animation:ingredientFlow 15s ease-in-out infinite alternate}
+#ingredientScene .milk-flow-b{width:74vw;height:43vh;left:37%;top:58%;opacity:.62;animation-delay:-7s;animation-duration:19s}
+body[data-milk="whole"] #ingredientScene{--milk-tone:rgba(255,240,199,.72);--milk-highlight:rgba(255,251,231,.9)}
+body[data-milk="coconut"] #ingredientScene{--milk-tone:rgba(235,250,226,.76);--milk-highlight:rgba(255,255,239,.94)}
+body[data-milk="almond"] #ingredientScene{--milk-tone:rgba(216,162,108,.7);--milk-highlight:rgba(255,225,180,.9)}
+body[data-milk="oat"] #ingredientScene{--milk-tone:rgba(207,151,74,.76);--milk-highlight:rgba(255,225,158,.94)}
+body[data-milk="none"] #ingredientScene .milk-effect{display:none}
+#ingredientScene .milk-detail{display:none;position:absolute;z-index:1;animation:ingredientFloat 8s ease-in-out infinite}
+body[data-milk="coconut"] #ingredientScene .coconut-detail,
+body[data-milk="almond"] #ingredientScene .almond-detail,
+body[data-milk="oat"] #ingredientScene .oat-detail{display:block}
+#ingredientScene .coconut-detail{width:12px;height:12px;border:1px solid rgba(255,255,241,.9);border-radius:50%;background:rgba(255,255,246,.6);box-shadow:0 0 12px rgba(255,255,239,.6)}
+#ingredientScene .almond-detail{width:15px;height:5px;border-radius:90% 30%;background:rgba(255,225,180,.9);box-shadow:0 0 10px rgba(184,120,70,.32)}
+#ingredientScene .oat-detail{width:10px;height:4px;border-radius:90%;background:rgba(255,220,151,.95);box-shadow:0 0 8px rgba(206,151,74,.4)}
+#ingredientScene .detail-a{left:18%;top:42%;animation-delay:-2s}#ingredientScene .detail-b{left:54%;top:67%;animation-delay:-5s}#ingredientScene .detail-c{left:82%;top:31%;animation-delay:-7s}
+#ingredientScene .creamer-flow{width:76vw;height:34vh;left:30%;top:65%;
+  background:linear-gradient(145deg,transparent 8%,var(--cream-tone) 34%,var(--cream-highlight) 50%,var(--cream-tone) 65%,transparent 92%);
+  filter:blur(8px);opacity:.8;animation:creamerFlow 12s ease-in-out infinite alternate}
+#ingredientScene .creamer-flow-b{width:58vw;height:25vh;left:-5%;top:72%;opacity:.56;animation-delay:-6s;animation-duration:16s}
+body[data-creamer="vanilla"] #ingredientScene{--cream-tone:rgba(255,239,194,.76);--cream-highlight:rgba(255,252,231,.95)}
+body[data-creamer="hazelnut"] #ingredientScene{--cream-tone:rgba(173,114,66,.72);--cream-highlight:rgba(236,190,133,.9)}
+body[data-creamer="caramel"] #ingredientScene{--cream-tone:rgba(225,143,51,.78);--cream-highlight:rgba(255,208,111,.96)}
+body[data-creamer="mocha"] #ingredientScene{--cream-tone:rgba(126,77,53,.72);--cream-highlight:rgba(207,153,112,.9)}
+body[data-creamer="none"] #ingredientScene .creamer-effect{display:none}
+@keyframes ingredientFlow{0%{transform:translate3d(-5vw,2vh,0) rotate(-10deg) scale(.92,1)}50%{transform:translate3d(7vw,-3vh,0) rotate(1deg) scale(1.08,.95)}100%{transform:translate3d(15vw,3vh,0) rotate(9deg) scale(1,.98)}}
+@keyframes creamerFlow{0%{transform:translate3d(6vw,2vh,0) rotate(10deg) scale(.9,1)}50%{transform:translate3d(-4vw,-3vh,0) rotate(0deg) scale(1.08,.94)}100%{transform:translate3d(-14vw,2vh,0) rotate(-10deg) scale(1,.98)}}
+@keyframes ingredientFloat{0%,100%{transform:translate3d(0,8px,0) rotate(-8deg);opacity:.1}35%{opacity:.72}65%{transform:translate3d(9px,-12px,0) rotate(8deg);opacity:.46}}
+
+/* Toppings stay airy and sparse; multiple choices combine without taking over. */
+#ingredientScene .topping-group{position:absolute;inset:0;display:none}
+#ingredientScene .topping-particle{position:absolute;width:7px;height:6px;border-radius:50%;
+  background:var(--topper-color);box-shadow:0 0 10px var(--topper-glow);opacity:0;
+  animation:topperFloat 9s ease-in-out infinite}
+#ingredientScene .topping-particle:nth-child(1){left:16%;top:36%;animation-delay:-1s}
+#ingredientScene .topping-particle:nth-child(2){left:57%;top:24%;animation-delay:-4s}
+#ingredientScene .topping-particle:nth-child(3){left:82%;top:65%;animation-delay:-7s}
+body[data-toppings~="cinnamon"] #ingredientScene .topping-cinnamon,
+body[data-toppings~="rose"] #ingredientScene .topping-rose,
+body[data-toppings~="sugar"] #ingredientScene .topping-sugar,
+body[data-toppings~="sprinkles"] #ingredientScene .topping-sprinkles,
+body[data-toppings~="gingerbread"] #ingredientScene .topping-gingerbread,
+body[data-toppings~="cocoa"] #ingredientScene .topping-cocoa{display:block}
+#ingredientScene .topping-cinnamon{--topper-color:#c7764d;--topper-glow:rgba(210,129,82,.38)}
+#ingredientScene .topping-rose{--topper-color:#e993a8;--topper-glow:rgba(240,155,180,.42)}
+#ingredientScene .topping-sugar{--topper-color:#fff3c8;--topper-glow:rgba(255,244,195,.7)}
+#ingredientScene .topping-sprinkles{--topper-color:#e88966;--topper-glow:rgba(245,160,115,.35)}
+#ingredientScene .topping-gingerbread{--topper-color:#bd8653;--topper-glow:rgba(199,145,91,.38)}
+#ingredientScene .topping-cocoa{--topper-color:#8e5b42;--topper-glow:rgba(153,103,73,.36)}
+#ingredientScene .topping-rose .topping-particle:nth-child(1){left:22%;top:58%;animation-delay:-2s}
+#ingredientScene .topping-rose .topping-particle:nth-child(2){left:73%;top:19%;animation-delay:-5s}
+#ingredientScene .topping-rose .topping-particle:nth-child(3){left:90%;top:46%;animation-delay:-8s}
+#ingredientScene .topping-sugar .topping-particle:nth-child(1){left:8%;top:72%;animation-delay:-1.5s}
+#ingredientScene .topping-sugar .topping-particle:nth-child(2){left:45%;top:30%;animation-delay:-4.5s}
+#ingredientScene .topping-sugar .topping-particle:nth-child(3){left:68%;top:52%;animation-delay:-7.5s}
+#ingredientScene .topping-sprinkles .topping-particle:nth-child(1){left:32%;top:21%;animation-delay:-2.5s}
+#ingredientScene .topping-sprinkles .topping-particle:nth-child(2){left:65%;top:75%;animation-delay:-5.5s}
+#ingredientScene .topping-sprinkles .topping-particle:nth-child(3){left:93%;top:31%;animation-delay:-8.5s}
+#ingredientScene .topping-gingerbread .topping-particle:nth-child(1){left:13%;top:54%;animation-delay:-1.8s}
+#ingredientScene .topping-gingerbread .topping-particle:nth-child(2){left:48%;top:72%;animation-delay:-4.8s}
+#ingredientScene .topping-gingerbread .topping-particle:nth-child(3){left:76%;top:40%;animation-delay:-7.8s}
+#ingredientScene .topping-cocoa .topping-particle:nth-child(1){left:37%;top:64%;animation-delay:-2.2s}
+#ingredientScene .topping-cocoa .topping-particle:nth-child(2){left:84%;top:14%;animation-delay:-5.2s}
+#ingredientScene .topping-cocoa .topping-particle:nth-child(3){left:55%;top:43%;animation-delay:-8.2s}
+#ingredientScene .topping-rose .topping-particle{width:14px;height:8px;border-radius:75% 24% 70% 28%}
+#ingredientScene .topping-sugar .topping-particle{width:7px;height:7px;border-radius:1px;box-shadow:0 0 12px var(--topper-glow)}
+#ingredientScene .topping-sprinkles .topping-particle{width:12px;height:4px;border-radius:4px}
+#ingredientScene .topping-sprinkles .topping-particle:nth-child(2){--topper-color:#e4bd62}
+#ingredientScene .topping-sprinkles .topping-particle:nth-child(3){--topper-color:#8cab77}
+#ingredientScene .topping-gingerbread .topping-particle{width:8px;height:7px;border-radius:2px}
+#ingredientScene .topping-cocoa .topping-particle{width:6px;height:6px}
+@keyframes topperFloat{0%,100%{transform:translate3d(0,10px,0) rotate(-12deg) scale(.8);opacity:0}28%{opacity:.72}60%{transform:translate3d(12px,-18px,0) rotate(12deg) scale(1.08);opacity:.58}86%{opacity:0}}
+@media(prefers-reduced-motion:reduce){#ingredientScene i{animation:none!important;opacity:.6}}
+
 /* steam */
 .scene-steam .wisp{position:absolute;bottom:-20%;width:60px;height:120px;border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,255,255,.5),transparent);
@@ -210,6 +326,118 @@ input,select{font-family:inherit;color:inherit}
 [data-bg="rainy"]{--scene-opacity:.4}
 [data-bg="fire"]{--scene-opacity:.65}
 
+/* ---------- 3b. IMMERSIVE SHOP EXPERIENCE ---------- */
+#shopInterior{position:fixed;inset:0;z-index:1;display:none;overflow:hidden;pointer-events:none;
+  background:linear-gradient(180deg,#e9dfcb 0%,#f4e9d2 60%,#dfc9a8 100%)}
+body[data-experience="shop"] #shopInterior{display:block}
+#shopInterior::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,251,239,.48),transparent 46%),
+    repeating-linear-gradient(90deg,transparent 0 23%,rgba(104,77,46,.035) 23.1% 23.25%,transparent 23.4% 100%)}
+#shopInterior .cafe-window{position:absolute;top:11vh;width:min(27vw,360px);height:42vh;min-height:220px;
+  border:12px solid #8c6746;border-bottom-width:18px;border-radius:10px 10px 3px 3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,245,212,.58) 53%,rgba(123,157,112,.38)),
+    linear-gradient(90deg,#dbe6d0,#f6dfaf 54%,#bdd0a7);
+  box-shadow:0 18px 32px -20px rgba(49,35,20,.65),inset 0 0 0 3px rgba(255,250,235,.52)}
+#shopInterior .cafe-window::before{content:"";position:absolute;inset:0 0 18%;
+  background:linear-gradient(90deg,transparent 47%,rgba(118,83,53,.82) 48% 51%,transparent 52%),
+    linear-gradient(180deg,transparent 48%,rgba(118,83,53,.76) 49% 52%,transparent 53%)}
+#shopInterior .cafe-window::after{content:"";position:absolute;left:-14px;right:-14px;bottom:-19px;height:10px;border-radius:2px;
+  background:linear-gradient(180deg,#b88b5d,#805d3f);box-shadow:0 8px 14px rgba(58,39,22,.18)}
+#shopInterior .window-left{left:4%}.cafe-window.window-right{right:4%;width:min(22vw,290px);height:36vh;top:14vh}
+#shopInterior .cafe-shelf{position:absolute;top:27vh;right:6%;width:min(19vw,240px);height:13px;border-radius:3px;
+  background:linear-gradient(180deg,#b7895c,#76543a);box-shadow:0 8px 0 rgba(77,52,31,.12),0 13px 22px -15px #392919}
+#shopInterior .cafe-shelf::before{content:"";position:absolute;left:9%;right:9%;bottom:12px;height:48px;
+  background:linear-gradient(90deg,transparent 0 7%,#9e7251 7% 19%,transparent 19% 27%,#d2ad77 27% 39%,transparent 39% 48%,#89966b 48% 61%,transparent 61% 70%,#ad7952 70% 82%,transparent 82%);
+  clip-path:polygon(0 100%,0 42%,10% 0,20% 42%,22% 100%,32% 100%,32% 32%,46% 0,57% 32%,57% 100%,67% 100%,67% 48%,80% 8%,92% 48%,92% 100%,100% 100%)}
+#shopInterior .pendant{position:absolute;top:0;width:94px;height:26vh;border-top:0 solid transparent;
+  background:linear-gradient(90deg,transparent 48%,rgba(87,66,44,.8) 49% 51%,transparent 52%)}
+#shopInterior .pendant::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:76px;height:30px;
+  border-radius:6px 6px 38px 38px;background:linear-gradient(180deg,#74543a,#a87949 35%,#d3ad6e 38%,#9e7349 100%);
+  box-shadow:0 15px 38px rgba(255,202,105,.22)}
+#shopInterior .pendant-one{left:25%;height:21vh}#shopInterior .pendant-two{right:25%;height:17vh;transform:scale(.78)}
+#shopInterior .shop-plant{position:absolute;bottom:17vh;width:56px;height:116px;opacity:.7}
+#shopInterior .shop-plant::before{content:"";position:absolute;bottom:0;left:12px;width:34px;height:34px;
+  border-radius:5px 5px 16px 16px;background:linear-gradient(90deg,#b77550,#d09a6b);box-shadow:0 8px 16px rgba(60,42,26,.18)}
+#shopInterior .shop-plant::after{content:"";position:absolute;left:50%;bottom:29px;width:52px;height:78px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 16%,#6d8b59 0 20%,transparent 21%),radial-gradient(ellipse at 20% 44%,#7f9b66 0 19%,transparent 20%),radial-gradient(ellipse at 78% 44%,#658353 0 19%,transparent 20%),radial-gradient(ellipse at 35% 72%,#90a874 0 18%,transparent 19%),linear-gradient(90deg,transparent 48%,#61754b 49% 52%,transparent 53%)}
+#shopInterior .plant-left{left:2%}#shopInterior .plant-right{right:2%;transform:scale(.82);transform-origin:bottom}
+#shopInterior .service-counter{position:absolute;left:-2%;right:-2%;bottom:-7vh;height:25vh;
+  background:linear-gradient(180deg,rgba(255,240,211,.24),transparent 14%),
+    repeating-linear-gradient(0deg,transparent 0 19px,rgba(80,48,26,.12) 20px 22px),
+    linear-gradient(180deg,#a7794f,#8c603e 15%,#70492f 100%);
+  border-top:10px solid rgba(222,186,134,.9);box-shadow:0 -17px 38px rgba(83,57,33,.2)}
+#shopInterior .service-counter::before{content:"";position:absolute;left:0;right:0;top:0;height:9px;
+  background:linear-gradient(180deg,#f1d8ac,#bc8c5c)}
+body[data-shop="matcha"] #shopInterior{background:linear-gradient(180deg,#dbe5d2 0%,#edf0dc 60%,#c7d2b5 100%)}
+body[data-shop="matcha"] #shopInterior::before{background:linear-gradient(180deg,rgba(251,255,238,.54),transparent 54%),repeating-linear-gradient(90deg,transparent 0 23%,rgba(71,99,60,.035) 23.1% 23.25%,transparent 23.4% 100%)}
+body[data-shop="matcha"] #shopInterior .cafe-window{border-color:#6e8060;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(239,247,216,.5) 52%,rgba(111,153,89,.5)),linear-gradient(90deg,#dbe8cd,#eef0d5 54%,#bad0a5)}
+body[data-shop="matcha"] #shopInterior .cafe-window::before{background:linear-gradient(90deg,transparent 47%,rgba(78,101,64,.82) 48% 51%,transparent 52%),linear-gradient(180deg,transparent 48%,rgba(78,101,64,.76) 49% 52%,transparent 53%)}
+body[data-shop="matcha"] #shopInterior .cafe-window::after{background:linear-gradient(180deg,#a5b28a,#637a53)}
+body[data-shop="matcha"] #shopInterior .cafe-shelf{background:linear-gradient(180deg,#82956e,#586d4b)}
+body[data-shop="matcha"] #shopInterior .pendant::after{background:linear-gradient(180deg,#59674d,#80916b 35%,#d6dcae 38%,#84936f 100%);box-shadow:0 15px 38px rgba(191,210,139,.26)}
+body[data-shop="matcha"] #shopInterior .service-counter{background:linear-gradient(180deg,rgba(246,251,225,.24),transparent 14%),repeating-linear-gradient(0deg,transparent 0 19px,rgba(63,79,47,.12) 20px 22px),linear-gradient(180deg,#82916a,#64754f 15%,#4e6242 100%);border-top-color:rgba(202,211,168,.92)}
+body[data-shop="matcha"] #shopInterior .service-counter::before{background:linear-gradient(180deg,#e1e8c5,#9eae7f)}
+
+body[data-experience="shop"] header{position:relative;z-index:3;max-width:920px;margin:16px auto 0;background:rgba(255,250,240,.94);backdrop-filter:blur(12px)}
+body[data-experience="shop"] #app{max-width:920px;margin:8px auto 0;padding:18px 22px 54px}
+body[data-experience="shop"] #scr-order.card{background:rgba(255,250,240,.94);backdrop-filter:blur(12px);border-color:rgba(255,255,255,.82);box-shadow:0 24px 70px -30px rgba(53,40,24,.54)}
+body[data-experience="shop"] .step-title{font-size:clamp(22px,3vw,27px)}
+body[data-experience="shop"] .stepper{margin-bottom:22px}
+body[data-experience="shop"] .opt{background:rgba(250,244,231,.92);min-height:84px}
+body[data-experience="shop"] .opt.selected{background:var(--accent-soft)}
+.shop-welcome{margin:0 0 18px;padding:20px 22px 18px;border:1px solid rgba(140,111,73,.19);border-radius:20px;
+  background:linear-gradient(115deg,rgba(255,255,250,.96),rgba(245,238,222,.9));box-shadow:0 12px 28px -22px rgba(61,45,25,.42)}
+.shop-kicker{display:flex;align-items:center;gap:7px;color:#886d4d;font-size:10px;font-weight:900;letter-spacing:1.25px;text-transform:uppercase}
+.shop-open-dot{width:7px;height:7px;border-radius:50%;background:#7f9b62;box-shadow:0 0 0 4px rgba(127,155,98,.12)}
+.shop-welcome h2{margin:10px 0 3px;color:#3c3023;font-family:var(--font-display);font-size:clamp(24px,4vw,32px);line-height:1.1;letter-spacing:-.5px}
+.shop-welcome>p{color:#806f58;font-size:13px}
+.venue-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.venue-choice{display:flex;align-items:center;gap:11px;min-width:0;padding:11px 14px;text-align:left;border:1.5px solid rgba(141,111,74,.22);
+  border-radius:15px;background:rgba(255,255,255,.53);transition:border-color .2s,background .2s,transform .2s,box-shadow .2s}
+.venue-choice:hover{transform:translateY(-2px);box-shadow:0 8px 18px -12px rgba(64,48,28,.45)}
+.venue-choice[aria-pressed="true"]{border-color:#7f9866;background:rgba(133,160,108,.13);box-shadow:0 0 0 3px rgba(133,160,108,.1)}
+.venue-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:rgba(147,117,76,.1);font-size:20px}
+.venue-choice[aria-pressed="true"] .venue-icon{background:rgba(133,160,108,.18)}
+.venue-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.venue-copy strong{font-size:13px;color:#3f352a}
+.venue-copy small{font-size:10px;color:#89785f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.experience-toggle{display:flex;align-items:center;gap:9px;padding:7px 11px;border:1px solid var(--border);border-radius:14px;
+  background:var(--surface-2);transition:transform .15s,background .2s;white-space:nowrap}
+.experience-toggle:hover{transform:translateY(-2px);background:var(--accent-soft)}
+.experience-toggle .experience-icon{font-size:17px}
+.experience-copy{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.experience-copy b{font-size:11px}.experience-copy small{font-size:9px;color:var(--text-dim)}
+.experience-track{width:28px;height:16px;border-radius:99px;background:#c9bda8;padding:2px;transition:background .2s}
+.experience-track i{display:block;width:12px;height:12px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.experience-toggle[aria-pressed="true"] .experience-track{background:#799667}
+.experience-toggle[aria-pressed="true"] .experience-track i{transform:translateX(12px)}
+body[data-experience="classic"] .experience-toggle{padding:7px 10px}
+body[data-experience="classic"] .experience-toggle .experience-copy small{color:var(--accent-strong)}
+@media(max-width:700px){
+  body[data-experience="shop"] header{margin:9px 10px 0;max-width:none;padding:10px}
+  body[data-experience="shop"] #app{margin:4px auto 0;padding:12px 12px 42px}
+  #shopInterior .cafe-window{width:35vw;height:32vh;min-height:160px;top:12vh}
+  #shopInterior .window-right{width:28vw;height:29vh}
+  #shopInterior .cafe-shelf{right:4%;top:33vh;width:28vw}
+  #shopInterior .service-counter{height:18vh}
+  #shopInterior .shop-plant{transform:scale(.72);transform-origin:bottom}
+  .experience-toggle{order:2;margin-left:auto}
+  .brand{margin-right:auto}
+}
+@media(max-width:480px){
+  body[data-experience="shop"] header{gap:7px}
+  .experience-toggle{gap:6px;padding:6px 8px}
+  .experience-copy b{font-size:10px}.experience-copy small{font-size:8px}
+  .experience-track{width:25px}
+  .experience-toggle[aria-pressed="true"] .experience-track i{transform:translateX(9px)}
+  .venue-switch{gap:7px}
+  .venue-choice{gap:7px;padding:9px 8px}
+  .venue-icon{width:32px;height:32px;flex-basis:32px;font-size:17px}
+  .venue-copy strong{font-size:11px}.venue-copy small{font-size:9px}
+  .shop-welcome{padding:16px 14px}
+}
+@media(max-width:360px){.experience-copy small{display:none}.experience-toggle{min-width:42px}.venue-choice{align-items:flex-start}.venue-copy small{white-space:normal}}
+
 /* ---------- 4. HEADER ---------- */
 header{
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -248,6 +476,19 @@ header{
 }
 
 /* ---------- 6. ORDER INTERFACE ---------- */
+.sound-mixer{margin:0 0 14px;border:1px solid var(--border);background:var(--surface-2);border-radius:14px;overflow:hidden}
+.sound-mixer summary{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;list-style:none;font-size:12px;font-weight:900;color:var(--text)}
+.sound-mixer summary::-webkit-details-marker{display:none}
+.sound-mixer summary::after{content:"＋";margin-left:auto;color:var(--accent-strong);font-size:13px}
+.sound-mixer[open] summary::after{content:"−"}
+.sound-mixer-hint{font-size:10px;font-weight:600;color:var(--text-dim)}
+.sound-mixer-controls{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;padding:0 12px 11px}
+.sound-mixer-control{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sound-mixer-control>span{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;color:var(--text-dim)}
+.sound-mixer-control output{color:var(--accent-strong);font-variant-numeric:tabular-nums}
+.sound-mixer-control input{width:100%;accent-color:var(--accent-strong)}
+.sound-mixer-range-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)}
+@media(max-width:380px){.sound-mixer-controls{grid-template-columns:1fr;gap:8px}}
 .stepper{display:flex;gap:6px;margin-bottom:18px}
 .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0}
 .step-dot .dot{width:100%;height:5px;border-radius:99px;background:var(--ring-track);transition:background .3s}
@@ -278,6 +519,10 @@ header{
 .opt.selected{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft),0 10px 22px -10px var(--glow)}
 .opt.selected .ic{transform:scale(1.08)}
 .opt.selected .chk{opacity:1;transform:scale(1)}
+.opt.picked{animation:optionPick .42s cubic-bezier(.22,1,.36,1)}
+.opt.picked .ic{animation:optionIconPick .42s cubic-bezier(.22,1,.36,1)}
+@keyframes optionPick{0%{transform:scale(.96)}55%{transform:scale(1.045)}100%{transform:scale(1)}}
+@keyframes optionIconPick{0%{transform:scale(.9)}60%{transform:scale(1.22)}100%{transform:scale(1.08)}}
 
 .nav-row{display:flex;gap:10px;margin-top:18px}
 .btn{
@@ -321,45 +566,31 @@ header{
 .btn-brew:active{transform:scale(.97)}
 @keyframes brewPulse{0%,100%{box-shadow:0 14px 30px -10px var(--glow)}50%{box-shadow:0 14px 34px -6px var(--glow)}}
 
-/* ---------- 6b. CINEMATIC BREW (premium) ---------- */
+/* ---------- 6b. ORDER PREPARATION ---------- */
 .cin-screen{position:fixed;inset:0;z-index:40;align-items:center;justify-content:center;overflow:hidden;
-  background:radial-gradient(130% 100% at 50% 30%,#3a2a1a 0%,#241a12 45%,#120c07 100%);
+  padding:18px;background:radial-gradient(120% 100% at 50% 12%,#fff9ed 0%,#f4e5c9 62%,#e8d2ac 100%);
   transition:opacity .45s ease,transform .55s ease}
-.cin-screen.active{display:flex;animation:cinFadeIn .6s ease both}
-.cin-screen.out{opacity:0;transform:scale(1.05)}
+.cin-screen.active{display:flex;animation:cinFadeIn .5s ease both}
+.cin-screen.out{opacity:0;transform:scale(1.025)}
 @keyframes cinFadeIn{from{opacity:0}to{opacity:1}}
-.cin-dark{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 42%,rgba(255,214,140,.12),transparent 65%)}
-.cin-grain{position:absolute;inset:-60%;pointer-events:none;opacity:.06;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.55'/></svg>");
-  animation:grainShift .5s steps(3) infinite}
-@keyframes grainShift{0%{transform:translate(0,0)}33%{transform:translate(-2%,1%)}66%{transform:translate(1%,-2%)}100%{transform:translate(0,0)}}
-.cin-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.6))}
-.cin-skip{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;z-index:5;opacity:.9}
-.cin-stage{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;padding:20px}
-
-/* clapperboard intro */
-.cin-clap{position:relative;width:172px;height:110px;opacity:0;transform:translateX(-40px);perspective:700px}
-.cin-clap.in{animation:clapIn .9s cubic-bezier(.22,1,.36,1) forwards}
-@keyframes clapIn{from{transform:translateX(-70px) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
-.cin-clap .clap-top{position:absolute;top:0;left:0;right:0;height:27px;border-radius:9px 9px 0 0;transform-origin:left 60%;
-  background:repeating-linear-gradient(90deg,#f4ead6 0 15px,#3a2a1a 15px 30px);box-shadow:0 6px 14px -6px rgba(0,0,0,.5)}
-.cin-clap.snap .clap-top{animation:clapSnap .45s cubic-bezier(.34,1.56,.64,1) forwards}
-@keyframes clapSnap{to{transform:rotate(-38deg)}}
-.cin-clap .clap-body{position:absolute;top:27px;left:0;right:0;bottom:0;border-radius:0 0 14px 14px;
-  background:linear-gradient(165deg,#f7eeda,#d9c49c);border:1px solid rgba(0,0,0,.15);
-  box-shadow:0 20px 34px -16px rgba(0,0,0,.7)}
-.clap-body::before{content:"POUR OVER · TAKE 1";position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
-  font-size:11px;font-weight:900;letter-spacing:2px;color:#7a5a3c;text-align:center}
-.cin-clap.done{animation:clapOut .5s ease forwards}
-@keyframes clapOut{to{transform:translateX(80px) scale(.85);opacity:0}}
-
-.cin-title{font-family:Georgia,"Times New Roman",serif;font-size:clamp(15px,3.6vw,19px);letter-spacing:.22em;
-  text-transform:uppercase;color:#f0d9b0;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0}
-.cin-title.show{animation:titleIn 1.3s .3s ease both}
-@keyframes titleIn{from{opacity:0;transform:translateY(10px);letter-spacing:.35em}to{opacity:1;transform:none;letter-spacing:.22em}}
-.cin-sub{font-size:12.5px;color:#d8c3a0;font-style:italic;max-width:340px;opacity:0}
-.cin-stage.drink .cin-sub{animation:subIn .8s .4s ease both}
-@keyframes subIn{from{opacity:0}to{opacity:.9}}
+.cin-skip{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;z-index:5;
+  background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.cin-stage{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:min(440px,100%);padding:clamp(22px,5vw,34px);text-align:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:28px;
+  box-shadow:0 24px 65px -32px rgba(78,52,25,.38)}
+.cin-title{font-family:var(--font-display);font-size:clamp(22px,5vw,29px);line-height:1.15;
+  font-weight:900;color:var(--text);opacity:1}
+.cin-title.show{animation:titleIn .45s ease both}
+@keyframes titleIn{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:none}}
+.cin-sub{font-size:12px;color:var(--text-dim);font-style:normal;line-height:1.45;max-width:340px;min-height:1.45em;opacity:1}
+.cin-progress{display:flex;align-items:flex-start;gap:8px;width:100%;max-width:360px;margin-top:2px}
+.cin-progress .brew-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;
+  color:var(--text-dim);font-size:10px;font-weight:800;transition:color .2s}
+.cin-progress .brew-step i{display:block;width:100%;height:4px;border-radius:99px;background:var(--ring-track);transition:background .35s,transform .35s}
+.cin-progress .brew-step.active,.cin-progress .brew-step.done{color:var(--accent-strong)}
+.cin-progress .brew-step.active i,.cin-progress .brew-step.done i{background:linear-gradient(90deg,var(--caramel),var(--accent))}
+.cin-progress .brew-step.active i{transform:scaleY(1.5)}
 
 /* the cup (shared shell also used by the idle drink) */
 .cin-drink{position:relative;width:230px;height:212px;display:flex;align-items:flex-end;justify-content:center;
@@ -437,12 +668,12 @@ header{
 .cin-drink.stream-creamer .cin-stream{background:linear-gradient(180deg,rgba(255,244,220,0),#f7e3bd 30%,rgba(247,227,189,.2))}
 @keyframes streamPour{0%{height:0;opacity:0}20%{opacity:.9}80%{opacity:.7}100%{height:64%;opacity:0}}
 
-/* lens flare on finish */
-.cin-flare{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:320px;height:320px;z-index:6;
-  background:radial-gradient(circle,rgba(255,236,190,.9) 0%,rgba(255,214,140,.35) 22%,transparent 55%);
+/* soft warm finish glow */
+.cin-flare{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:280px;height:280px;z-index:6;
+  background:radial-gradient(circle,rgba(255,223,154,.65) 0%,rgba(255,214,140,.22) 24%,transparent 58%);
   opacity:0;pointer-events:none}
 .cin-flare.show{animation:flare 1.05s ease forwards}
-@keyframes flare{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}35%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+@keyframes flare{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}35%{opacity:.85}100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}}
 
 /* ---------- 6c. BREW COUNTDOWN WIDGET (order screen) ---------- */
 .brew-widget{position:relative;display:flex;flex-direction:column;gap:12px;margin-top:14px;padding:14px;
@@ -556,6 +787,32 @@ header{
 .timer-pip-btn{margin-left:auto;width:34px;height:34px;font-size:16px}
 .timer-pip-btn.active{background:var(--accent);color:var(--accent-text)}
 @media(max-width:430px){.timer-pip-btn{width:32px;height:32px}}
+.music-panel{margin:18px auto 0;max-width:390px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:18px}
+.music-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.music-heading h3{font-size:14px;font-weight:900}
+.music-heading p,.music-formats{font-size:11px;color:var(--text-dim);line-height:1.45}
+.music-drop{display:flex;flex-direction:column;align-items:center;gap:6px;padding:15px 12px;text-align:center;border:1.5px dashed var(--border);border-radius:14px;transition:background .2s,border-color .2s}
+.music-drop.drag-over{border-color:var(--accent-strong);background:var(--accent-soft)}
+.music-drop-icon{font-size:22px}
+.music-prompt{font-size:13px;font-weight:800}
+.music-formats{max-width:280px}
+.music-choose{margin-top:3px;padding:8px 14px;font-size:12px}
+.music-file-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.music-file-input:focus-visible+label{outline:3px solid var(--accent-strong);outline-offset:3px}
+.music-status{min-height:1.3em;margin-top:8px;color:var(--text-dim);font-size:11px;text-align:center}
+.music-status.error{color:#a33b2f;font-weight:800}
+.music-controls{display:flex;flex-direction:column;gap:10px}
+.music-track{display:flex;align-items:center;gap:8px;min-width:0}
+.music-track-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800}
+.music-remove{width:30px;height:30px;flex:none;border-radius:9px;background:var(--surface);border:1px solid var(--border);font-size:14px}
+.music-playback{display:grid;grid-template-columns:auto minmax(30px,1fr) auto;align-items:center;gap:8px}
+.music-play{min-width:84px;padding:8px 10px;font-size:12px}
+.music-seek{width:100%;accent-color:var(--accent-strong)}
+.music-time{font-size:10px;font-variant-numeric:tabular-nums;color:var(--text-dim)}
+.music-volume{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:11px;font-weight:800;color:var(--text-dim)}
+.music-volume input{width:100px;max-width:42%;accent-color:var(--accent-strong)}
+.music-seek:disabled{opacity:.45}
+@media(max-width:380px){.music-panel{padding:12px}.music-playback{grid-template-columns:auto minmax(28px,1fr) auto;gap:6px}.music-play{min-width:74px;padding-inline:7px}}
 
 /* ---------- 8. COMPLETION ---------- */
 .complete-wrap{text-align:center;padding:8px 4px 4px}
@@ -795,22 +1052,160 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
-/* ---------- 13. BOOT OVERLAY (instant branded splash) ---------- */
-#boot{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-  background:var(--bg-a);transition:opacity .45s ease,visibility .45s}
-#boot.done{opacity:0;visibility:hidden;pointer-events:none}
-.boot-inner{display:flex;flex-direction:column;align-items:center;gap:10px}
-.boot-cup{font-size:56px;animation:bootPop .55s cubic-bezier(.22,1,.36,1) both}
-.boot-title{font-family:var(--font-display);font-size:15px;font-weight:900;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--text-dim)}
-.boot-wisp{width:46px;height:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.55),transparent);
-  filter:blur(8px);animation:bootSteam 1.6s ease-in-out infinite;opacity:0}
-@keyframes bootPop{from{transform:scale(.6) translateY(10px);opacity:0}to{transform:none;opacity:1}}
-@keyframes bootSteam{0%{transform:translateY(8px) scaleX(.7);opacity:0}
-  35%{opacity:.8}100%{transform:translateY(-16px) scaleX(1.5);opacity:0}}
+/* ---------- 13. WELCOME RITUAL ---------- */
+.welcome-intro{
+  --drink-color:#85502f;--drink-highlight:#d79a60;
+  position:fixed;inset:0;z-index:10000;display:grid;place-items:center;overflow:hidden;
+  padding:24px;background:radial-gradient(ellipse at 50% 30%,#fffdf7 0%,#f8edda 48%,#e7cfaa 100%);
+  color:#3c2a1b;opacity:1;visibility:visible;
+  transition:opacity .68s ease,visibility .68s ease;
+}
+.welcome-intro::before,.welcome-intro::after{content:"";position:absolute;pointer-events:none;border-radius:50%;filter:blur(1px)}
+.welcome-intro::before{width:min(76vw,860px);height:min(76vw,860px);left:-22%;top:-44%;
+  background:radial-gradient(circle,rgba(255,255,255,.72),rgba(255,255,255,0) 68%)}
+.welcome-intro::after{width:min(72vw,760px);height:min(72vw,760px);right:-22%;bottom:-48%;
+  background:radial-gradient(circle,rgba(194,145,82,.2),rgba(194,145,82,0) 70%)}
+.welcome-intro[data-drink="matcha"]{--drink-color:#668d4d;--drink-highlight:#a9cf72}
+.welcome-intro[data-drink="espresso"]{--drink-color:#4a271b;--drink-highlight:#b37a4c}
+.welcome-intro.leaving{opacity:0;visibility:hidden;pointer-events:none}
+body.welcome-playing{overflow:hidden}
+.welcome-skip{position:absolute;z-index:3;top:max(18px,env(safe-area-inset-top));right:max(20px,env(safe-area-inset-right));
+  display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid rgba(93,67,40,.16);border-radius:999px;
+  background:rgba(255,252,244,.66);color:#78644c;font-size:12px;font-weight:750;letter-spacing:.02em;
+  transition:background .2s ease,transform .2s ease}
+.welcome-skip:hover{background:#fffdf8;transform:translateY(-1px)}
+.welcome-skip:focus-visible{outline:3px solid #8da36e;outline-offset:3px}
+.welcome-skip span{font-size:15px;line-height:1}
+.welcome-card{position:relative;z-index:1;width:min(620px,100%);padding:clamp(23px,4vw,38px) clamp(18px,5vw,48px) 24px;
+  overflow:hidden;border:1px solid rgba(255,255,255,.78);border-radius:34px;
+  background:linear-gradient(145deg,rgba(255,253,247,.9),rgba(255,248,235,.72));
+  box-shadow:0 32px 90px rgba(91,61,30,.18),inset 0 1px rgba(255,255,255,.9);
+  text-align:center;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.welcome-kicker{display:flex;justify-content:center;align-items:center;gap:8px;color:#92764f;font-size:10px;font-weight:850;
+  letter-spacing:.19em;text-transform:uppercase}
+.welcome-kicker i{width:7px;height:7px;border-radius:50%;background:#88a66c;box-shadow:0 0 0 4px rgba(136,166,108,.14)}
+.welcome-title{margin:13px 0 0;font-size:clamp(27px,4.7vw,38px);font-weight:850;letter-spacing:-.045em;line-height:1.13}
+.welcome-title span{display:block;color:#81583b}
+.welcome-caption{margin-top:9px;color:#8b7559;font-size:14px;line-height:1.5}
+.welcome-stage{position:relative;width:min(400px,100%);height:clamp(290px,38vh,330px);margin:2px auto 0;isolation:isolate}
+.welcome-stage-glow{position:absolute;left:50%;top:40%;width:250px;height:190px;transform:translate(-50%,-50%);
+  border-radius:50%;background:radial-gradient(ellipse,rgba(225,186,128,.32),rgba(255,255,255,0) 70%)}
+.welcome-table-shadow{position:absolute;z-index:1;left:50%;bottom:27px;width:255px;height:25px;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(ellipse,rgba(105,70,38,.22),rgba(105,70,38,0) 72%)}
+.welcome-table-line{position:absolute;z-index:1;left:7%;right:7%;bottom:17px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(149,112,70,.22) 22%,rgba(149,112,70,.32) 50%,rgba(149,112,70,.22) 78%,transparent)}
+.welcome-kettle{position:absolute;z-index:4;left:calc(50% - 117px);top:25px;width:128px;height:92px;overflow:visible;
+  transform-origin:74% 78%;opacity:0;filter:drop-shadow(0 11px 10px rgba(82,57,35,.16))}
+.welcome-pour-stream{position:absolute;z-index:2;top:88px;left:calc(50% + 4px);width:7px;height:83px;border-radius:50%;
+  transform:scaleY(0);transform-origin:top center;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--drink-color) 22%,var(--drink-highlight) 52%,var(--drink-color) 82%,transparent);
+  filter:drop-shadow(0 1px 4px color-mix(in srgb,var(--drink-color),transparent 50%))}
+.welcome-pour-stream::after{content:"";position:absolute;left:1px;right:1px;bottom:-3px;height:9px;border-radius:50%;background:var(--drink-highlight);filter:blur(2px)}
+.welcome-mug{position:absolute;z-index:3;left:50%;bottom:33px;width:150px;height:150px;transform:translateX(-50%);transform-origin:50% 82%;
+  filter:drop-shadow(0 10px 9px rgba(96,61,31,.13))}
+.welcome-mug-handle{position:absolute;z-index:0;right:0;top:47px;width:62px;height:67px;border:10px solid #c9b8a0;border-left:0;
+  border-radius:0 48% 48% 0;box-shadow:inset -3px 0 3px rgba(255,255,255,.5)}
+.welcome-mug-body{position:absolute;z-index:1;left:9px;top:13px;width:124px;height:129px;overflow:hidden;
+  clip-path:polygon(2% 0,98% 0,87% 90%,76% 100%,24% 100%,13% 90%);
+  background:linear-gradient(106deg,#fdf8ed 0%,#e5d8c5 48%,#fffaf0 70%,#d9c9b3 100%);
+  box-shadow:inset 5px 0 10px rgba(255,255,255,.65),inset -6px 0 8px rgba(127,99,67,.13)}
+.welcome-mug-interior{position:absolute;inset:12px 15px 13px;border-radius:43% 43% 24px 24px / 17% 17% 16% 16%;
+  overflow:hidden;background:linear-gradient(180deg,#3d2b20,#281b15);box-shadow:inset 0 3px 5px rgba(0,0,0,.45)}
+.welcome-cup-fill{position:absolute;left:0;right:0;bottom:0;height:5%;border-radius:48% 48% 6px 6px / 13% 13% 5px 5px;
+  background:linear-gradient(90deg,var(--drink-color),var(--drink-highlight) 49%,var(--drink-color));
+  box-shadow:inset 0 5px 7px rgba(255,255,255,.16)}
+.welcome-cup-fill::before{content:"";position:absolute;left:-2%;right:-2%;top:-6px;height:12px;border-radius:50%;
+  background:linear-gradient(90deg,var(--drink-color),var(--drink-highlight) 48%,var(--drink-color));
+  box-shadow:0 2px 5px rgba(0,0,0,.17)}
+.welcome-cup-rim{position:absolute;z-index:3;left:10px;top:7px;width:130px;height:29px;border:5px solid #fdf8ec;border-radius:50%;
+  background:linear-gradient(180deg,#493126,#211711);box-shadow:0 2px 5px rgba(83,58,35,.23),inset 0 2px 4px rgba(0,0,0,.45)}
+.welcome-cup-rim::after{content:"";position:absolute;left:9px;right:9px;top:3px;height:8px;border-radius:50%;
+  background:linear-gradient(90deg,var(--drink-color),var(--drink-highlight) 52%,var(--drink-color));opacity:.9}
+.welcome-cup-highlight{position:absolute;z-index:4;left:26px;top:52px;width:7px;height:51px;border-radius:99px;
+  background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,0));transform:rotate(5deg)}
+.welcome-steam{position:absolute;z-index:4;top:128px;width:10px;height:28px;border:2px solid rgba(255,255,255,.64);border-bottom:0;border-left-color:transparent;
+  border-radius:50%;filter:blur(.5px);opacity:0}
+.welcome-steam.one{left:calc(50% - 29px)}.welcome-steam.two{left:calc(50% + 12px);top:121px;height:33px}
+.welcome-drink-label{display:inline-flex;align-items:center;gap:11px;margin-top:-4px;padding:9px 17px 9px 11px;
+  border:1px solid rgba(143,111,72,.14);border-radius:999px;background:rgba(255,252,245,.72);box-shadow:0 5px 20px rgba(110,79,45,.06);text-align:left}
+.welcome-drink-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#f3e7d1;font-size:18px}
+.welcome-drink-copy{display:flex;flex-direction:column;gap:1px}
+.welcome-drink-copy small{color:#9b8260;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.welcome-drink-copy b{color:#5a412b;font-size:13px;font-weight:850}
+.welcome-footer{margin-top:14px;color:#9c876c;font-size:11px;letter-spacing:.035em}
+.welcome-intro.playing .welcome-card{animation:welcome-card-in .72s cubic-bezier(.2,.8,.2,1) both}
+.welcome-intro.playing .welcome-kettle{animation:welcome-kettle 4s cubic-bezier(.42,0,.32,1) both}
+.welcome-intro.playing .welcome-pour-stream{animation:welcome-pour 1.45s ease-in-out 1.08s both}
+.welcome-intro.playing .welcome-cup-fill{animation:welcome-fill 1s cubic-bezier(.2,.7,.25,1) 1.2s forwards,welcome-sip 1.9s cubic-bezier(.4,0,.3,1) 3.3s forwards}
+.welcome-intro.playing .welcome-mug{animation:welcome-sip-mug 1.9s cubic-bezier(.4,0,.3,1) 3.3s forwards}
+.welcome-intro.playing .welcome-steam{animation:welcome-steam 1.8s ease-in-out 2.4s infinite}
+@keyframes welcome-card-in{from{transform:translateY(12px) scale(.985);opacity:0}to{transform:none;opacity:1}}
+@keyframes welcome-kettle{
+  0%{opacity:0;transform:translate(18px,-138px) rotate(-9deg)}
+  15%{opacity:1;transform:translate(0,0) rotate(0)}
+  27%,62%{opacity:1;transform:translate(0,0) rotate(40deg)}
+  72%{opacity:1;transform:translate(0,-5px) rotate(0)}
+  100%{opacity:0;transform:translate(0,-138px) rotate(-8deg)}
+}
+@keyframes welcome-pour{0%{transform:scaleY(0);opacity:0}12%{opacity:1}82%{transform:scaleY(1);opacity:1}100%{transform:scaleY(.86);opacity:0}}
+@keyframes welcome-fill{from{height:5%}to{height:var(--fill-height,68%)}}
+@keyframes welcome-sip{0%,40%{height:var(--fill-height,68%)}82%,100%{height:18%}}
+@keyframes welcome-sip-mug{0%,14%{transform:translateX(-50%) translateY(0) rotate(0)}
+  42%,69%{transform:translateX(-50%) translateY(-27px) rotate(11deg)}
+  88%{transform:translateX(-50%) translateY(-7px) rotate(3deg)}
+  100%{transform:translateX(-50%) translateY(0) rotate(0)}}
+@keyframes welcome-steam{0%,100%{transform:translateY(8px) scale(.75);opacity:0}45%{opacity:.55}70%{transform:translateY(-8px) scale(1.1);opacity:.3}}
+.welcome-intro[data-drink="coffee"]{--fill-height:70%}
+.welcome-intro[data-drink="matcha"]{--fill-height:66%}
+.welcome-intro[data-drink="espresso"]{--fill-height:48%}
+.welcome-intro[data-drink="espresso"] .welcome-pour-stream{width:5px}
+@media(max-width:520px){
+  .welcome-intro{padding:14px}
+  .welcome-skip{top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));padding:9px 12px}
+  .welcome-card{padding:25px 15px 20px;border-radius:27px}
+  .welcome-kicker{font-size:8px;letter-spacing:.14em}
+  .welcome-title{font-size:clamp(25px,7vw,33px)}
+  .welcome-caption{font-size:12px}
+  .welcome-stage{height:clamp(270px,36vh,295px);margin-top:0}
+  .welcome-mug{transform:translateX(-50%) scale(.9);transform-origin:50% 82%}
+  .welcome-intro.playing .welcome-mug{animation-name:welcome-sip-mug-small}
+  .welcome-pour-stream{left:calc(50% + 4px);top:78px;height:77px}
+  .welcome-kettle{top:18px;left:calc(50% - 112px);transform:scale(.94);transform-origin:74% 78%}
+  .welcome-intro.playing .welcome-kettle{animation-name:welcome-kettle-small}
+  .welcome-table-shadow{width:220px;bottom:23px}
+  .welcome-table-line{bottom:14px}
+  .welcome-steam.one{top:119px}.welcome-steam.two{top:114px}
+}
+@keyframes welcome-kettle-small{
+  0%{opacity:0;transform:scale(.94) translate(18px,-138px) rotate(-9deg)}
+  15%{opacity:1;transform:scale(.94) translate(0,0) rotate(0)}
+  27%,62%{opacity:1;transform:scale(.94) translate(0,0) rotate(40deg)}
+  72%{opacity:1;transform:scale(.94) translate(0,-5px) rotate(0)}
+  100%{opacity:0;transform:scale(.94) translate(0,-138px) rotate(-8deg)}
+}
+@keyframes welcome-sip-mug-small{0%,14%{transform:translateX(-50%) translateY(0) rotate(0) scale(.9)}
+  42%,69%{transform:translateX(-50%) translateY(-24px) rotate(11deg) scale(.9)}
+  88%{transform:translateX(-50%) translateY(-6px) rotate(3deg) scale(.9)}
+  100%{transform:translateX(-50%) translateY(0) rotate(0) scale(.9)}}
+@media(max-height:700px){
+  .welcome-card{padding-top:22px;padding-bottom:17px}
+  .welcome-title{margin-top:9px;font-size:clamp(24px,4vw,32px)}
+  .welcome-caption{margin-top:6px}
+  .welcome-stage{height:clamp(250px,38vh,285px)}
+  .welcome-mug{bottom:18px}
+  .welcome-kettle{top:2px}
+  .welcome-pour-stream{top:65px}
+  .welcome-footer{margin-top:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .welcome-intro.playing .welcome-card{animation:none;opacity:1}
+  .welcome-intro.playing .welcome-kettle,.welcome-intro.playing .welcome-pour-stream,
+  .welcome-intro.playing .welcome-cup-fill,.welcome-intro.playing .welcome-mug,.welcome-intro.playing .welcome-steam{animation:none}
+  .welcome-intro.playing .welcome-cup-fill{height:var(--fill-height,68%)}
+}
 </style>
 </head>
-<body data-skin="cozy" data-font="sans" data-bg="steam">
+<body data-skin="cozy" data-font="sans" data-bg="steam" data-drink="coffee" data-milk="oat" data-creamer="vanilla" data-toppings="" data-experience="shop" data-shop="coffee">
 
 <!-- brand cup mark (shared by the header logo and boot splash) — a glossy
      ceramic cup with a full handle loop, cream rim band, and soft ground
@@ -841,26 +1236,86 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
 </symbol>
 </defs></svg>
 
-<!-- instant branded splash; fades out right after first paint -->
-<div id="boot" aria-hidden="true">
-  <div class="boot-inner"><span class="boot-wisp"></span><span class="boot-cup"><svg viewBox="0 0 96 96" width="64" height="64" aria-hidden="true" focusable="false"><use href="#pfgCupArt"/></svg></span><span class="boot-title">Pour Over Focus</span></div>
+<!-- Random welcome ritual: the interface stays inert until the cup is set down. -->
+<div class="welcome-intro" id="welcomeIntro" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeCaption">
+  <button class="welcome-skip" id="welcomeSkip" type="button">Skip animation <span aria-hidden="true">↗</span></button>
+  <main class="welcome-card">
+    <p class="welcome-kicker"><i aria-hidden="true"></i> A little ritual before focus</p>
+    <h2 class="welcome-title" id="welcomeTitle">Welcome to <span>Pour Over Focus</span></h2>
+    <p class="welcome-caption" id="welcomeCaption">Take a breath. Your first sip is on us.</p>
+    <div class="welcome-stage" id="welcomeStage" aria-hidden="true">
+      <span class="welcome-stage-glow"></span>
+      <svg class="welcome-kettle" viewBox="0 0 140 110" focusable="false">
+        <path d="M37 39C22 38 16 48 19 62c3 12 12 19 24 17" fill="none" stroke="#8d7254" stroke-width="7" stroke-linecap="round"/>
+        <path d="M43 37c1-11 11-18 25-18s24 7 25 18" fill="none" stroke="#8d7254" stroke-width="6" stroke-linecap="round"/>
+        <path d="M35 43c0-10 11-17 31-17s31 7 31 17v26c0 13-13 22-31 22S35 82 35 69Z" fill="#f8f2e7" stroke="#8b704f" stroke-width="3"/>
+        <path d="M90 45c11-2 21 1 37 10L97 69c-4-9-6-16-7-24Z" fill="#e9ddc9" stroke="#8b704f" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M46 46c3-5 8-8 14-9" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+        <circle cx="66" cy="24" r="5" fill="#b99668"/>
+        <path d="M48 77c8 5 24 6 36 0" fill="none" stroke="#cdbb9e" stroke-width="2" opacity=".75"/>
+      </svg>
+      <i class="welcome-pour-stream"></i>
+      <span class="welcome-steam one"></span><span class="welcome-steam two"></span>
+      <div class="welcome-table-shadow"></div><div class="welcome-table-line"></div>
+      <div class="welcome-mug">
+        <span class="welcome-mug-handle"></span>
+        <div class="welcome-mug-body"><div class="welcome-mug-interior"><i class="welcome-cup-fill"></i></div><i class="welcome-cup-highlight"></i></div>
+        <span class="welcome-cup-rim"></span>
+      </div>
+    </div>
+    <div class="welcome-drink-label" aria-live="polite">
+      <span class="welcome-drink-icon" id="welcomeDrinkIcon" aria-hidden="true">☕</span>
+      <span class="welcome-drink-copy"><small>Today’s welcome pour</small><b id="welcomeDrinkName">Coffee</b></span>
+    </div>
+    <p class="welcome-footer">Poured fresh, just for this visit.</p>
+  </main>
 </div>
 
 <!-- ============ BACKGROUND SCENES ============ -->
 <div id="bgScene">
+  <div id="drinkScene" aria-hidden="true">
+    <div class="drink-layer coffee-bg"><i class="liquid-ribbon ribbon-a"></i><i class="liquid-ribbon ribbon-b"></i><i class="coffee-vapor vapor-a"></i><i class="coffee-vapor vapor-b"></i><i class="coffee-vapor vapor-c"></i></div>
+    <div class="drink-layer matcha-bg"><i class="matcha-ribbon ribbon-a"></i><i class="matcha-ribbon ribbon-b"></i></div>
+    <div class="drink-layer espresso-bg"><i class="drop d1"></i><i class="drop d2"></i><i class="drop d3"></i><i class="drop d4"></i><i class="drop d5"></i><i class="drop d6"></i><i class="drop d7"></i><i class="drop d8"></i></div>
+    <div id="ingredientScene">
+      <div class="milk-effect"><i class="milk-flow milk-flow-a"></i><i class="milk-flow milk-flow-b"></i>
+        <i class="milk-detail coconut-detail detail-a"></i><i class="milk-detail coconut-detail detail-b"></i><i class="milk-detail coconut-detail detail-c"></i>
+        <i class="milk-detail almond-detail detail-a"></i><i class="milk-detail almond-detail detail-b"></i><i class="milk-detail almond-detail detail-c"></i>
+        <i class="milk-detail oat-detail detail-a"></i><i class="milk-detail oat-detail detail-b"></i><i class="milk-detail oat-detail detail-c"></i>
+      </div>
+      <div class="creamer-effect"><i class="creamer-flow creamer-flow-a"></i><i class="creamer-flow creamer-flow-b"></i></div>
+      <div class="topping-field">
+        <div class="topping-group topping-cinnamon"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+        <div class="topping-group topping-rose"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+        <div class="topping-group topping-sugar"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+        <div class="topping-group topping-sprinkles"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+        <div class="topping-group topping-gingerbread"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+        <div class="topping-group topping-cocoa"><i class="topping-particle"></i><i class="topping-particle"></i><i class="topping-particle"></i></div>
+      </div>
+    </div>
+  </div>
   <div class="scene scene-steam"><span class="wisp w1"></span><span class="wisp w2"></span><span class="wisp w3"></span></div>
   <div class="scene scene-rainy"><span class="drop d1"></span><span class="drop d2"></span><span class="drop d3"></span><span class="drop d4"></span><span class="drop d5"></span></div>
   <div class="scene scene-patio"><span class="mote m1"></span><span class="mote m2"></span><span class="mote m3"></span></div>
   <div class="scene scene-fire"></div>
   <div class="scene scene-books"><span class="book b1"></span><span class="book b2"></span><span class="book b3"></span><span class="book b4"></span><span class="book b5"></span><span class="book b6"></span><span class="book b7"></span><span class="book b8"></span></div>
 </div>
+<div id="shopInterior" aria-hidden="true">
+  <div class="cafe-window window-left"></div><div class="cafe-window window-right"></div>
+  <div class="cafe-shelf"></div><div class="pendant pendant-one"></div><div class="pendant pendant-two"></div>
+  <div class="shop-plant plant-left"></div><div class="shop-plant plant-right"></div><div class="service-counter"></div>
+</div>
 
 <!-- ============ HEADER ============ -->
 <header>
   <div class="brand">
     <span class="logo"><svg viewBox="0 0 96 96" width="30" height="30" aria-hidden="true" focusable="false"><use href="#pfgCupArt"/></svg></span>
-    <h1>Pour Over Focus<small>gamified focus café</small></h1>
+    <h1>Pour Over Focus<small id="brandSubtitle">Your neighborhood focus café</small></h1>
   </div>
+  <button class="experience-toggle" id="experienceToggle" type="button" aria-pressed="true" aria-label="Switch to classic interface">
+    <span class="experience-icon" aria-hidden="true">🏬</span><span class="experience-copy"><b id="experienceLabel">Shop experience</b><small id="experienceHint">Switch to classic</small></span>
+    <span class="experience-track" aria-hidden="true"><i></i></span>
+  </button>
   <span class="pill" id="streakPill" title="Daily streak">🔥 <b id="streakVal">0</b></span>
   <span class="pill" title="Your balance"><span class="coin">🪙</span><b id="balanceVal">$0</b></span>
   <button class="hbtn" id="lbBtn" title="Leaderboard (real-time)">🏅</button>
@@ -876,6 +1331,33 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
 
   <!-- ============ ORDER SCREEN ============ -->
   <section class="card screen active" id="scr-order">
+    <section class="shop-welcome" id="shopWelcome" aria-label="Choose your café">
+      <div class="shop-kicker"><span class="shop-open-dot" aria-hidden="true"></span> OPEN TODAY · YOUR NEIGHBORHOOD FOCUS CAFÉ</div>
+      <h2 id="venueTitle">Settle in at the coffee house</h2>
+      <p id="venueSubtitle">A warm seat, a fresh pour, and a little room to think.</p>
+      <div class="venue-switch" role="group" aria-label="Choose a shop atmosphere">
+        <button class="venue-choice" type="button" data-venue="coffee" aria-pressed="true">
+          <span class="venue-icon" aria-hidden="true">☕</span><span class="venue-copy"><strong>Coffee house</strong><small>Warm wood · slow pours</small></span>
+        </button>
+        <button class="venue-choice" type="button" data-venue="matcha" aria-pressed="false">
+          <span class="venue-icon" aria-hidden="true">🍵</span><span class="venue-copy"><strong>Matcha bar</strong><small>Garden calm · whisked fresh</small></span>
+        </button>
+      </div>
+    </section>
+    <details class="sound-mixer" id="soundMixer">
+      <summary><span>🎚️ Sound mixer</span><span class="sound-mixer-hint">Tune your choice chimes</span></summary>
+      <div class="sound-mixer-controls">
+        <label class="sound-mixer-control" for="choiceVolume">
+          <span>Volume <output id="choiceVolumeValue">72%</output></span>
+          <input id="choiceVolume" type="range" min="0" max="100" step="1" value="72" aria-label="Choice sound volume">
+        </label>
+        <label class="sound-mixer-control" for="choiceBlend">
+          <span>Layer blend <output id="choiceBlendValue">55%</output></span>
+          <input id="choiceBlend" type="range" min="0" max="100" step="1" value="55" aria-label="Blend between mellow and bright tones">
+          <span class="sound-mixer-range-labels"><span>Mellow</span><span>Bright</span></span>
+        </label>
+      </div>
+    </details>
     <div class="stepper">
       <button class="step-dot active" data-step="0"><i class="dot"></i><span>1 · Drink</span></button>
       <button class="step-dot" data-step="1"><i class="dot"></i><span>2 · Milk</span></button>
@@ -991,15 +1473,8 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
   <!-- ============ CINEMATIC BREW SCREEN ============ -->
   <section class="screen cin-screen" id="scr-brew" aria-live="polite">
     <button class="btn cin-skip hidden" id="cinSkip">⏭ Skip</button>
-    <div class="cin-dark"></div>
-    <div class="cin-grain"></div>
-    <div class="cin-vignette"></div>
     <div class="cin-stage" id="cinStage">
-      <div class="cin-clap" id="cinClap" aria-hidden="true">
-        <div class="clap-top"></div>
-        <div class="clap-body"></div>
-      </div>
-      <div class="cin-title" id="cinTitle">Now Brewing Your Focus Session…</div>
+      <div class="cin-title" id="cinTitle">Preparing your drink…</div>
       <div class="cin-drink" id="cinDrink" aria-hidden="true">
         <div class="cin-stream" id="cinStream"></div>
         <div class="cin-cup">
@@ -1012,6 +1487,7 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
         </div>
         <div class="cin-flare" id="cinFlare"></div>
       </div>
+      <div class="cin-progress" id="cinProgress" aria-hidden="true"></div>
       <p class="cin-sub" id="cinSub"></p>
     </div>
   </section>
@@ -1021,6 +1497,7 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
     <div class="timer-top">
       <span class="chip" id="phaseChip">☕ Focus</span>
       <span class="chip" id="roundChip">Round 1 of 4</span>
+      <button class="hbtn" id="musicPanelToggle" type="button" title="Hide study music panel" aria-label="Hide study music panel" aria-controls="musicPanel" aria-expanded="true">🎧</button>
       <button class="hbtn timer-pip-btn" id="pipBtn" type="button" title="Open timer in a floating always-on-top window" aria-label="Open timer in Picture-in-Picture window">⧉</button>
     </div>
     <div class="timer-meta">
@@ -1049,6 +1526,29 @@ body.cel-festival .cel-stage{background:radial-gradient(120% 90% at 50% 115%,rgb
       <button class="btn primary" id="pauseBtn">⏸ Pause</button>
       <button class="btn primary hidden" id="skipBtn">⏭ Skip break</button>
     </div>
+    <section class="music-panel" id="musicPanel" aria-labelledby="musicTitle">
+      <div class="music-heading">
+        <div><h3 id="musicTitle">🎧 Your study music</h3><p>Plays from this device only</p></div>
+      </div>
+      <div class="music-drop" id="musicDrop">
+        <span class="music-drop-icon" aria-hidden="true">🎶</span>
+        <p class="music-prompt">Choose a song or drop it here</p>
+        <p class="music-formats">WAV, MP3 and other formats your browser can play. Re-select after a reload.</p>
+        <input class="music-file-input" id="musicFile" type="file" accept="audio/*,.wav,.mp3,.m4a,.aac,.ogg,.opus,.flac,.aiff,.aif,.webm,.wma" aria-label="Choose a local audio file">
+        <label class="btn music-choose" for="musicFile">Choose audio file</label>
+      </div>
+      <div class="music-controls hidden" id="musicControls">
+        <div class="music-track"><span aria-hidden="true">🎵</span><span class="music-track-name" id="musicTrackName"></span><button class="music-remove" id="musicRemove" type="button" title="Remove selected song" aria-label="Remove selected song">✕</button></div>
+        <div class="music-playback">
+          <button class="btn primary music-play" id="musicPlay" type="button" disabled>▶ Play</button>
+          <input class="music-seek" id="musicSeek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek through song" disabled>
+          <span class="music-time"><span id="musicCurrent">0:00</span> / <span id="musicDuration">0:00</span></span>
+        </div>
+        <label class="music-volume" for="musicVolume">🔉 Volume <input id="musicVolume" type="range" min="0" max="1" value="0.7" step="0.01"></label>
+      </div>
+      <p class="music-status" id="musicStatus" aria-live="polite">Your audio file is never uploaded.</p>
+      <audio id="studyAudio" hidden preload="metadata"></audio>
+    </section>
   </section>
 
   <!-- ============ COMPLETION SCREEN ============ -->
@@ -1188,6 +1688,7 @@ const DEFAULT_STATE = {
   brews: 0,              // lifetime brews (for the cinematic achievement)
   owned: [],             // ids of purchased shop items (defaults free)
   selected: { skin: "cozy", font: "sans", bg: "steam" },
+  experience: { mode: "shop", venue: "coffee" },
   settings: { focus: 25, short: 5, long: 15, rounds: 4, category: "Study", brewTime: 20 },
   achievements: [],      // unlocked achievement ids
   streak: { count: 0, last: null },  // last = 'YYYY-MM-DD'
@@ -1217,6 +1718,10 @@ function loadState() {
       skin: merged.selected.skin || DEFAULT_STATE.selected.skin,
       font: merged.selected.font || DEFAULT_STATE.selected.font,
       bg: merged.selected.bg || DEFAULT_STATE.selected.bg,
+    };
+    merged.experience = {
+      mode: merged.experience && merged.experience.mode === "classic" ? "classic" : "shop",
+      venue: merged.experience && merged.experience.venue === "matcha" ? "matcha" : "coffee",
     };
     merged.settings = {
       focus: clampInt(merged.settings.focus, 1, 120, DEFAULT_STATE.settings.focus),
@@ -1347,6 +1852,36 @@ function applyTheme(over) {
   if (scene) scene.style.display = "block";
 }
 
+function renderExperience() {
+  const mode = S.experience.mode;
+  const venue = S.experience.venue;
+  const immersive = mode === "shop";
+  document.body.dataset.experience = mode;
+  document.body.dataset.shop = venue;
+  $("#experienceToggle").setAttribute("aria-pressed", String(immersive));
+  $("#experienceToggle").setAttribute("aria-label", immersive ? "Switch to classic interface" : "Switch to shop experience");
+  $("#experienceLabel").textContent = immersive ? "Shop experience" : "Classic interface";
+  $("#experienceHint").textContent = immersive ? "Switch to classic" : "Switch to shop";
+  $("#experienceToggle .experience-icon").textContent = immersive ? "🏬" : "☕";
+  $("#brandSubtitle").textContent = immersive ? "Your neighborhood focus café" : "gamified focus café";
+  $("#shopWelcome").classList.toggle("hidden", !immersive);
+  $("#venueTitle").textContent = venue === "matcha" ? "Welcome to the matcha bar" : "Settle in at the coffee house";
+  $("#venueSubtitle").textContent = venue === "matcha"
+    ? "A quiet garden corner, a freshly whisked cup, and a clear mind."
+    : "A warm seat, a fresh pour, and a little room to think.";
+  $$(".venue-choice").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.venue === venue)));
+}
+function setExperienceMode(mode) {
+  S.experience.mode = mode === "classic" ? "classic" : "shop";
+  saveState();
+  renderExperience();
+}
+function setShopVenue(venue) {
+  S.experience.venue = venue === "matcha" ? "matcha" : "coffee";
+  saveState();
+  renderExperience();
+}
+
 /* ---------- D. HEADER / BALANCE / STREAK ---------- */
 function renderHeader() {
   $("#balanceVal").textContent = "$" + S.balance;
@@ -1384,14 +1919,17 @@ function buildOrderOptions() {
 }
 
 function pickOption(group, id) {
+  let selected = true;
   if (group === "toppings") {
     // multi-select toggle
     const i = order.toppings.indexOf(id);
-    if (i > -1) order.toppings.splice(i, 1); else order.toppings.push(id);
+    selected = i < 0;
+    if (selected) order.toppings.push(id); else order.toppings.splice(i, 1);
     const btn = $(`[data-optgroup="toppings"] [data-id="${id}"]`);
-    btn.classList.toggle("selected");
+    btn.classList.toggle("selected", selected);
   } else {
     order[group] = id;
+    if (group === "drink") document.body.dataset.drink = id;
     $$(`[data-optgroup="${group}"] .opt`).forEach(b =>
       b.classList.toggle("selected", b.dataset.id === id));
     markStepDone(group);
@@ -1400,6 +1938,16 @@ function pickOption(group, id) {
       $("#nextBtn").disabled = false;
     }
   }
+  document.body.dataset.milk = order.milk;
+  document.body.dataset.creamer = order.creamer;
+  document.body.dataset.toppings = order.toppings.join(" ");
+  const chosenButton = $(`[data-optgroup="${group}"] [data-id="${id}"]`);
+  if (chosenButton) {
+    $$(`[data-optgroup="${group}"] .opt`).forEach(b => b.classList.remove("picked"));
+    void chosenButton.offsetWidth;
+    chosenButton.classList.add("picked");
+  }
+  cin.selection(group, id, selected);
   updateSummary();
   syncBrewPhotos();   // highlight the photo matching the selected drink
   adjustBrew();   // selection changed mid-countdown → rebuild smoothly
@@ -1630,7 +2178,168 @@ function toggleSound() {
   $("#soundBtn").classList.toggle("off", !S.soundOn);
   saveState();
   toast(S.soundOn ? "🔊" : "🔇", S.soundOn ? "Brew sounds on" : "Brew sounds off",
-    S.soundOn ? "Claps, pours & dings will play during the brew." : "The brew will stay silent.", false);
+    S.soundOn ? "Choice notes follow the mixer alongside brew sounds." : "The brew and choices will stay silent.", false);
+}
+
+const CHOICE_VOLUME_KEY = "pourFocus.choiceVolume.v1";
+const CHOICE_BLEND_KEY = "pourFocus.choiceBlend.v1";
+function setupSoundMixer() {
+  const controls = [
+    { input: $("#choiceVolume"), output: $("#choiceVolumeValue"), key: CHOICE_VOLUME_KEY, fallback: 72 },
+    { input: $("#choiceBlend"), output: $("#choiceBlendValue"), key: CHOICE_BLEND_KEY, fallback: 55 },
+  ];
+  controls.forEach(({ input, output, key, fallback }) => {
+    const saved = lsGet(key);
+    input.value = String(saved === null ? fallback : clampInt(saved, 0, 100, fallback));
+    const paint = () => { output.textContent = input.value + "%"; };
+    paint();
+    input.addEventListener("input", () => {
+      paint();
+      lsSet(key, input.value);
+    });
+  });
+}
+
+/* ---------- F2. LOCAL STUDY MUSIC ---------- */
+const studyAudio = $("#studyAudio");
+let studyMusicUrl = null;
+const musicFileInput = $("#musicFile");
+const musicControls = $("#musicControls");
+const musicPlayButton = $("#musicPlay");
+const musicSeek = $("#musicSeek");
+const musicVolume = $("#musicVolume");
+const musicStatus = $("#musicStatus");
+const musicDrop = $("#musicDrop");
+const musicPanel = $("#musicPanel");
+const musicPanelToggle = $("#musicPanelToggle");
+const MUSIC_PANEL_KEY = "pourFocus.musicPanelHidden.v1";
+
+function setStudyMusicPanelHidden(hidden, persist = true) {
+  musicPanel.classList.toggle("hidden", hidden);
+  musicPanelToggle.classList.toggle("off", hidden);
+  const label = hidden ? "Show study music panel" : "Hide study music panel";
+  musicPanelToggle.title = label;
+  musicPanelToggle.setAttribute("aria-label", label);
+  musicPanelToggle.setAttribute("aria-expanded", String(!hidden));
+  if (persist) lsSet(MUSIC_PANEL_KEY, String(hidden));
+}
+function setMusicStatus(message, error) {
+  musicStatus.textContent = message;
+  musicStatus.classList.toggle("error", !!error);
+}
+function musicTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
+  const whole = Math.floor(seconds);
+  return Math.floor(whole / 60) + ":" + String(whole % 60).padStart(2, "0");
+}
+function renderMusicTime() {
+  const duration = studyAudio.duration;
+  $("#musicCurrent").textContent = musicTime(studyAudio.currentTime);
+  $("#musicDuration").textContent = musicTime(duration);
+  const seekable = Number.isFinite(duration) && duration > 0;
+  musicSeek.disabled = !seekable;
+  if (seekable && document.activeElement !== musicSeek) {
+    musicSeek.value = String((studyAudio.currentTime / duration) * 100);
+  }
+}
+function updateMusicPlayButton() {
+  const playing = !studyAudio.paused && !studyAudio.ended;
+  musicPlayButton.textContent = playing ? "⏸ Pause" : "▶ Play";
+  musicPlayButton.setAttribute("aria-label", playing ? "Pause study music" : "Play study music");
+}
+function loadStudyMusic(file) {
+  if (!file) return;
+  const audioExtension = /\.(?:wav|mp3|m4a|aac|ogg|opus|flac|aiff|aif|webm|wma|mid|midi)$/i;
+  if (file.type && !file.type.startsWith("audio/") && !audioExtension.test(file.name)) {
+    setMusicStatus("That doesn't look like an audio file. Choose WAV, MP3 or another audio file.", true);
+    return;
+  }
+  studyAudio.pause();
+  const previousUrl = studyMusicUrl;
+  studyMusicUrl = URL.createObjectURL(file);
+  studyAudio.src = studyMusicUrl;
+  if (previousUrl) URL.revokeObjectURL(previousUrl);
+  studyAudio.volume = Number(musicVolume.value);
+  $("#musicTrackName").textContent = file.name;
+  musicControls.classList.remove("hidden");
+  musicPlayButton.disabled = true;
+  musicSeek.value = "0";
+  $("#musicCurrent").textContent = "0:00";
+  $("#musicDuration").textContent = "--:--";
+  setMusicStatus("Checking whether this browser can play the file…", false);
+  updateMusicPlayButton();
+  studyAudio.load();
+}
+function clearStudyMusic() {
+  studyAudio.pause();
+  studyAudio.removeAttribute("src");
+  studyAudio.load();
+  if (studyMusicUrl) URL.revokeObjectURL(studyMusicUrl);
+  studyMusicUrl = null;
+  musicControls.classList.add("hidden");
+  musicFileInput.value = "";
+  musicSeek.value = "0";
+  setMusicStatus("Your audio file is never uploaded.", false);
+}
+function stopStudyMusicPlayback() {
+  studyAudio.pause();
+  try { studyAudio.currentTime = 0; } catch (e) { /* metadata may not be ready */ }
+  renderMusicTime();
+  updateMusicPlayButton();
+}
+function setupStudyMusic() {
+  setStudyMusicPanelHidden(lsGet(MUSIC_PANEL_KEY) === "true", false);
+  musicPanelToggle.addEventListener("click", () => {
+    setStudyMusicPanelHidden(musicPanelToggle.getAttribute("aria-expanded") === "true");
+  });
+  musicFileInput.addEventListener("change", () => {
+    loadStudyMusic(musicFileInput.files && musicFileInput.files[0]);
+    musicFileInput.value = "";   // selecting the same track again still fires change
+  });
+  $("#musicPlay").addEventListener("click", () => {
+    if (studyAudio.paused) {
+      studyAudio.play().catch(() => setMusicStatus("Playback couldn't start. Press Play again or choose another file.", true));
+    } else {
+      studyAudio.pause();
+    }
+  });
+  $("#musicRemove").addEventListener("click", clearStudyMusic);
+  musicVolume.addEventListener("input", () => { studyAudio.volume = Number(musicVolume.value); });
+  musicSeek.addEventListener("input", () => {
+    if (Number.isFinite(studyAudio.duration) && studyAudio.duration > 0) {
+      studyAudio.currentTime = (Number(musicSeek.value) / 100) * studyAudio.duration;
+      renderMusicTime();
+    }
+  });
+  studyAudio.addEventListener("loadedmetadata", () => {
+    if (!studyMusicUrl) return;
+    musicPlayButton.disabled = false;
+    renderMusicTime();
+    setMusicStatus("Ready to play — your file stays on this device.", false);
+  });
+  studyAudio.addEventListener("canplay", () => { if (studyMusicUrl) musicPlayButton.disabled = false; });
+  studyAudio.addEventListener("timeupdate", renderMusicTime);
+  studyAudio.addEventListener("durationchange", renderMusicTime);
+  studyAudio.addEventListener("play", updateMusicPlayButton);
+  studyAudio.addEventListener("pause", updateMusicPlayButton);
+  studyAudio.addEventListener("ended", () => {
+    updateMusicPlayButton();
+    setMusicStatus("Song finished. Press Play to listen again.", false);
+  });
+  studyAudio.addEventListener("error", () => {
+    if (!studyMusicUrl) return;
+    musicPlayButton.disabled = true;
+    setMusicStatus("This browser couldn't decode that audio format. Try an MP3 or WAV file.", true);
+  });
+  ["dragenter", "dragover"].forEach(type => musicDrop.addEventListener(type, e => {
+    e.preventDefault();
+    musicDrop.classList.add("drag-over");
+  }));
+  ["dragleave", "drop"].forEach(type => musicDrop.addEventListener(type, e => {
+    e.preventDefault();
+    if (type === "drop") loadStudyMusic(e.dataTransfer && e.dataTransfer.files[0]);
+    musicDrop.classList.remove("drag-over");
+  }));
 }
 
 /* ---------- G. TIMER ENGINE ---------- */
@@ -1687,6 +2396,12 @@ function brewStages() {
   return s;
 }
 const STAGE_CLASS = { base: "", milk: "milk", creamer: "creamer", toppings: "topped" };
+function revealDrinkStage(col, stage) {
+  const cls = STAGE_CLASS[stage];
+  if (!cls) return;
+  col.classList.add(cls);
+  if (stage === "toppings") $$(".top", col).forEach(p => p.classList.add("anim"));
+}
 function brewStageLabel(i) {
   const s = brewStages()[Math.min(i, brewStages().length - 1)];
   if (s === "base") return "Pouring your " + ORDER_OPTIONS.drink.find(o => o.id === order.drink).label + "…";
@@ -1776,7 +2491,7 @@ function paintBrew(i) {
   const s = stages[idx];
   const cls = STAGE_CLASS[s];
   if (cls && brew.col && !brew.col.classList.contains(cls)) {
-    brew.col.classList.add(cls);
+    revealDrinkStage(brew.col, s);
     if (s === "milk") cin.pour(1100);
     else if (s === "creamer") cin.pour(800);
     else if (s === "toppings") cin.sprinkle();
@@ -1793,8 +2508,7 @@ function adjustBrew() {
   const idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
   brew.col = buildDrink($("#miniLiquid"), order, true);
   for (let k = 1; k <= idx; k++) {
-    const cls = STAGE_CLASS[stages[k]];
-    if (cls) brew.col.classList.add(cls);
+    revealDrinkStage(brew.col, stages[k]);
   }
   $("#brewStage").textContent = brewStageLabel(idx);
 }
@@ -1850,7 +2564,7 @@ function startSessionFlow() {
   playFinishMoment();
 }
 
-/* ---------- G2. CINEMATIC BREW (premium sequence) ---------- */
+/* ---------- G2. ORDER PREPARATION ---------- */
 let cinTimers = [];
 let cinNodes = [];
 function cinAt(fn, ms) { const t = setTimeout(fn, ms); cinTimers.push(t); return t; }
@@ -1898,7 +2612,22 @@ const cin = {
       cinNodes.push(o, g);
     } catch (e) {}
   },
-  clap() { cin.noise(0.09, 3200, 900, 0.11); cin.tone(1250, 0.04, "square", 0.015); cin.tone(720, 0.05, "square", 0.015, 0.035); },
+  selection(group, id, selected) {
+    if (!cin.live()) return;
+    const profile = (OPTION_SOUND_PROFILES[group] || {}).hasOwnProperty(id)
+      ? OPTION_SOUND_PROFILES[group][id]
+      : { pitch: 523.25, wave: "sine", interval: 1.25 };
+    const pitch = profile.pitch * (selected ? 1 : 0.72);
+    const volume = Number($("#choiceVolume").value) / 100;
+    const blend = Number($("#choiceBlend").value) / 100;
+    const bodyGain = (selected ? 0.022 : 0.014) * volume * (1 - blend * 0.18);
+    cin.tone(pitch, selected ? 0.12 : 0.14, profile.wave, bodyGain);
+    if (selected) {
+      const accentWave = profile.wave === "sine" ? "triangle" : "sine";
+      const accentGain = 0.011 * volume * (0.25 + blend * 1.1);
+      cin.tone(pitch * profile.interval, 0.15, accentWave, accentGain, 0.04);
+    }
+  },
   place() { cin.tone(150, 0.14, "sine", 0.09); cin.tone(90, 0.18, "sine", 0.06, 0.02); },
   pour(dur) { cin.noise(dur || 1.4, 950, 240, 0.06); },
   ding() { [1046.5, 1318.5, 1568].forEach((f, i) => cin.tone(f, 0.55, "sine", 0.07, i * 0.05)); },
@@ -1907,6 +2636,35 @@ const cin = {
 
 const MILK_TONE = { whole: "#f7ecd6", oat: "#f0e0c4", almond: "#f4e8d0", coconut: "#fdf6e6" };
 const CREAMER_GLOW = { vanilla: "#fff3d6", hazelnut: "#f2d9b8", caramel: "#eab979", mocha: "#c9a06a" };
+const OPTION_SOUND_PROFILES = {
+  drink: {
+    coffee: { pitch: 392.00, wave: "sine", interval: 1.50 },
+    matcha: { pitch: 523.25, wave: "triangle", interval: 1.25 },
+    espresso: { pitch: 659.25, wave: "sine", interval: 1.20 },
+  },
+  milk: {
+    whole: { pitch: 440.00, wave: "sine", interval: 1.50 },
+    coconut: { pitch: 554.37, wave: "triangle", interval: 1.25 },
+    almond: { pitch: 493.88, wave: "sine", interval: 1.33 },
+    oat: { pitch: 587.33, wave: "triangle", interval: 1.20 },
+    none: { pitch: 369.99, wave: "sine", interval: 1.50 },
+  },
+  creamer: {
+    vanilla: { pitch: 698.46, wave: "sine", interval: 1.25 },
+    hazelnut: { pitch: 739.99, wave: "triangle", interval: 1.20 },
+    caramel: { pitch: 783.99, wave: "sine", interval: 1.50 },
+    mocha: { pitch: 659.25, wave: "triangle", interval: 1.33 },
+    none: { pitch: 415.30, wave: "sine", interval: 1.25 },
+  },
+  toppings: {
+    cinnamon: { pitch: 466.16, wave: "triangle", interval: 1.25 },
+    rose: { pitch: 830.61, wave: "sine", interval: 1.20 },
+    sugar: { pitch: 932.33, wave: "triangle", interval: 1.25 },
+    sprinkles: { pitch: 880.00, wave: "sine", interval: 1.50 },
+    gingerbread: { pitch: 554.37, wave: "triangle", interval: 1.33 },
+    cocoa: { pitch: 622.25, wave: "sine", interval: 1.20 },
+  },
+};
 
 /* build the drink DOM: base → milk → creamer → toppings, in the user's order.
    `anim` true → layers animate in (cinematic); false → static (idle drink). */
@@ -1933,7 +2691,7 @@ function buildDrink(el, order, anim) {
   if (order.toppings && order.toppings.length) {
     const tp = document.createElement("div");
     tp.className = "liq liq-top";
-    order.toppings.forEach(id => addToppings(tp, id, anim));
+    order.toppings.forEach(id => addToppings(tp, id));
     col.appendChild(tp);
   }
   el.appendChild(col);
@@ -1941,11 +2699,11 @@ function buildDrink(el, order, anim) {
 }
 
 /* sprinkle topping particles onto the drink surface (transform/opacity only) */
-function addToppings(layer, id, anim) {
+function addToppings(layer, id) {
   const n = mobileScale(id === "sugar" ? 8 : id === "cinnamon" ? 7 : 6);
   for (let i = 0; i < n; i++) {
     const p = document.createElement("span");
-    p.className = "top top-" + id + (anim ? " anim" : "");
+    p.className = "top top-" + id;
     p.style.left = (6 + Math.random() * 84) + "%";
     p.style.animationDelay = (Math.random() * 0.7) + "s";
     if (id === "sugar") p.textContent = "✦";
@@ -1961,37 +2719,71 @@ function flare() {
   setTimeout(() => f.classList.remove("show"), 1150);   // independent of the timeline
 }
 
-/* reveal every layer of the finished drink (for the flourish — the build already
-   happened during the countdown, so all layers animate in together) */
-function revealAll(col) {
-  col.classList.add("milk", "creamer", "topped");   // no-ops for absent layers
-}
-
-/* the finish moment: clapperboard → finished cup → flare → timer (short flourish) */
+/* prepare the selected drink in clear, ordered steps, then flow into focus */
 function playFinishMoment() {
   cinClear();
   cinStopAudio();
   showScreen("scr-brew");
   $("#cinSkip").classList.remove("hidden");
-  const stage = $("#cinStage"), clap = $("#cinClap"), title = $("#cinTitle");
-  stage.classList.remove("drink");
-  clap.classList.remove("snap", "done"); void clap.offsetWidth; clap.classList.add("in");
-  title.textContent = "Your Order Is Ready!";
-  title.classList.remove("show"); void title.offsetWidth; title.classList.add("show");
+  const title = $("#cinTitle"), drink = $("#cinDrink");
+  const stages = brewStages();
+  const progress = $("#cinProgress");
+  const stepNames = { base: "Pour", milk: "Milk", creamer: "Creamer", toppings: "Finish" };
+  progress.textContent = "";
+  const steps = stages.map(s => {
+    const step = document.createElement("div");
+    step.className = "brew-step";
+    const bar = document.createElement("i");
+    const label = document.createElement("span");
+    label.textContent = stepNames[s];
+    step.append(bar, label);
+    progress.appendChild(step);
+    return step;
+  });
+  const col = buildDrink($("#cupLiquid"), session.order, true);
+  drink.classList.remove("in", "streaming", "stream-milk", "stream-creamer");
+  void drink.offsetWidth;
+  drink.classList.add("in");
   $("#cinSub").textContent = summarizeOrder();
-  cin.clap();
-  cinAt(() => { clap.classList.add("snap"); cin.clap(); }, 950);
-  cinAt(() => { clap.classList.add("done"); }, 1650);
-  const drink = $("#cinDrink");
+  cin.place();
+  cin.pour(1200);
+
+  function showStep(i) {
+    steps.forEach((step, n) => {
+      step.classList.toggle("done", n < i);
+      step.classList.toggle("active", n === i);
+    });
+    title.textContent = i < stages.length ? brewStageLabel(i) : "Your order is ready — let's focus";
+    title.classList.remove("show");
+    void title.offsetWidth;
+    title.classList.add("show");
+  }
+  showStep(0);
+  stages.forEach((s, i) => {
+    if (i === 0) return;  // the base pour starts with the cup
+    cinAt(() => {
+      revealDrinkStage(col, s);
+      if (s === "milk" || s === "creamer") {
+        drink.classList.remove("streaming", "stream-milk", "stream-creamer");
+        drink.classList.add("streaming", s === "milk" ? "stream-milk" : "stream-creamer");
+        cin.pour(900);
+      } else if (s === "toppings") {
+        cin.sprinkle();
+      }
+      showStep(i);
+    }, i * 1000);
+  });
+  const finishAt = Math.max(2350, (stages.length - 1) * 1000 + 1100);
   cinAt(() => {
-    drink.classList.add("in");
-    stage.classList.add("drink");
-    const col = buildDrink($("#cupLiquid"), session.order, true);
-    revealAll(col);
-    cin.place();
-  }, 1750);
-  cinAt(() => { flare(); cin.ding(); }, 2950);
-  cinAt(() => transitionToTimer(), 3650);
+    steps.forEach(step => { step.classList.remove("active"); step.classList.add("done"); });
+    title.textContent = "Your order is ready — let's focus";
+    title.classList.remove("show");
+    void title.offsetWidth;
+    title.classList.add("show");
+    flare();
+    cin.ding();
+  }, finishAt - 650);
+  cinAt(() => transitionToTimer(), finishAt + 250);
 }
 
 /* cinematic ends → crossfade into the timer screen */
@@ -2068,9 +2860,12 @@ function startTimer() {
 }
 function pauseTimer() {
   if (!session.running || session.done) return;
+  session.remaining = Math.max(0, (session.endTime - Date.now()) / 1000);
   session.running = false;
   clearInterval(timerId);
   $("#pauseBtn").textContent = "▶ Resume";
+  renderTimer();
+  document.title = fmt(Math.ceil(session.remaining)) + " · " + (session.type === "focus" ? "Focus ☕" : "Break 🍃");
   saveSession();
 }
 function resumeTimer() {
@@ -2080,9 +2875,9 @@ function resumeTimer() {
 }
 
 function tick() {
-  session.remaining = Math.max(0, Math.round((session.endTime - Date.now()) / 1000));
+  session.remaining = Math.max(0, (session.endTime - Date.now()) / 1000);
   renderTimer();
-  document.title = fmt(session.remaining) + " · " + (session.type === "focus" ? "Focus ☕" : "Break 🍃");
+  document.title = fmt(Math.ceil(session.remaining)) + " · " + (session.type === "focus" ? "Focus ☕" : "Break 🍃");
   if (session.remaining <= 0 && !session.done) {
     session.done = true;
     clearInterval(timerId);
@@ -2207,7 +3002,7 @@ function renderPipState(state) {
   const liquid = pipWindow.document.querySelector("[data-pip-liquid]");
   const round = pipWindow.document.querySelector("[data-pip-round]");
   if (ring) ring.style.background = `conic-gradient(var(--accent) ${pct}%, var(--ring-track) 0)`;
-  if (time) time.textContent = fmt(state.remaining);
+  if (time) time.textContent = fmt(Math.ceil(state.remaining));
   if (phase) phase.textContent = state.running ? (state.type === "focus" ? "Focus" : "Break") : "Paused";
   if (toggle) toggle.textContent = state.running ? "⏸ Pause" : "▶ Resume";
   if (end) end.disabled = !state.running;
@@ -2223,7 +3018,7 @@ function renderPipState(state) {
 function renderTimer() {
   const total = (session.type === "focus" ? S.settings.focus : (session.type === "long" ? S.settings.long : S.settings.short)) * 60;
   const pct = Math.min(100, Math.max(0, ((total - session.remaining) / total) * 100));
-  $("#timeDisplay").textContent = fmt(session.remaining);
+  $("#timeDisplay").textContent = fmt(Math.ceil(session.remaining));
   $("#ring").style.background = "conic-gradient(var(--accent) " + pct + "%, var(--ring-track) 0)";
   syncPipState();
   // focus: the drink drains as you work (full → empty); break: it refills for the next round
@@ -2266,6 +3061,7 @@ function skipBreak() {
 }
 
 function endSession() {
+  stopStudyMusicPlayback();
   clearInterval(timerId);
   clearTimeout(pendingTimeout);
   clearTimeout(celTimer);
@@ -2303,7 +3099,7 @@ function restoreSession() {
     toppings: Array.isArray(saved.order.toppings) ? saved.order.toppings : [],
   } : null;
   if (saved.running) {
-    const remaining = Math.max(0, Math.round((saved.endTime - Date.now()) / 1000));
+    const remaining = Math.max(0, (saved.endTime - Date.now()) / 1000);
     if (saved.phaseDone || remaining <= 0) {
       // the phase already finished — or expired while the app was closed.
       // phaseDone=true ⇒ its side effects already ran, so just advance;
@@ -2523,6 +3319,7 @@ function toast(icon, title, desc, gold) {
 }
 
 function finishSession() {
+  stopStudyMusicPlayback();
   clearSession();
   S.sessionsCompleted++;
   saveState();
@@ -2548,6 +3345,7 @@ function resetProgress() {
   lsDel(LEGACY_SESSION_KEY);
   S = loadState();
   applyTheme();
+  renderExperience();
   renderHeader();
   renderShop("skins");
   endSession();
@@ -2590,6 +3388,7 @@ function importSave(file) {
       lsSet(LS_KEY, JSON.stringify(data));
       S = loadState();                    // sanitize: merge with defaults, clamp values
       applyTheme();
+      renderExperience();
       renderHeader();
       renderShop("skins");
       renderEquipNote();
@@ -2888,10 +3687,62 @@ function skipCelebration() {
   finishCelebration();
 }
 
-/* ---------- K. BOOT ---------- */
+/* ---------- K. WELCOME RITUAL ---------- */
+const WELCOME_DRINKS = [
+  { id: "coffee", label: "Coffee", icon: "☕" },
+  { id: "matcha", label: "Matcha", icon: "🍵" },
+  { id: "espresso", label: "Espresso shot", icon: "⚡" },
+];
+
+function startWelcomeIntro() {
+  const intro = $("#welcomeIntro");
+  if (!intro) return;
+
+  const drink = WELCOME_DRINKS[Math.floor(Math.random() * WELCOME_DRINKS.length)];
+  intro.dataset.drink = drink.id;
+  $("#welcomeDrinkIcon").textContent = drink.icon;
+  $("#welcomeDrinkName").textContent = drink.label;
+
+  const header = $("header");
+  const app = $("#app");
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (header) header.inert = true;
+  if (app) app.inert = true;
+  document.body.classList.add("welcome-playing");
+
+  let finished = false;
+  let timer = null;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+    document.removeEventListener("keydown", onKeyDown, true);
+    intro.classList.add("leaving");
+    window.setTimeout(() => {
+      intro.remove();
+      document.body.classList.remove("welcome-playing");
+      if (header) header.inert = false;
+      if (app) app.inert = false;
+    }, reducedMotion ? 40 : 720);
+  };
+  const onKeyDown = event => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    finish();
+  };
+
+  $("#welcomeSkip").addEventListener("click", finish, { once: true });
+  document.addEventListener("keydown", onKeyDown, true);
+  requestAnimationFrame(() => intro.classList.add("playing"));
+
+  timer = window.setTimeout(finish, reducedMotion ? 250 : 5700);
+}
+
 function init() {
   buildOrderOptions();
   applyTheme();
+  renderExperience();
   renderHeader();
   restoreSession();               // resume a live timer after a reload/close
 
@@ -2929,7 +3780,9 @@ function init() {
     }
   });
 
-  // timer controls
+  // sound controls and local study music
+  setupSoundMixer();
+  setupStudyMusic();
   $("#pauseBtn").addEventListener("click", () => session.running ? pauseTimer() : resumeTimer());
   setupDocumentPictureInPicture();
   $("#skipBtn").addEventListener("click", skipBreak);
@@ -2939,6 +3792,10 @@ function init() {
   // completion screen
   $("#againBtn").addEventListener("click", () => { flowStarted = false; resetBrew(); gotoStep(0); showScreen("scr-order"); });
   $("#shopFromDone").addEventListener("click", openShop);
+
+  // saved experience and café atmosphere switches
+  $("#experienceToggle").addEventListener("click", () => setExperienceMode(S.experience.mode === "shop" ? "classic" : "shop"));
+  $$(".venue-choice").forEach(button => button.addEventListener("click", () => setShopVenue(button.dataset.venue)));
 
   // header buttons
   $("#lbBtn").addEventListener("click", openLeaderboard);
@@ -3010,12 +3867,8 @@ function init() {
   $("#nextBtn").disabled = false;
   updateSummary();
 
-  // branded splash: fade out right after first paint (instant on reduced-motion)
-  const bootEl = $("#boot");
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    bootEl.classList.add("done");
-    setTimeout(() => bootEl.remove(), 600);
-  }));
+  // Show the per-load welcome ritual only after saved state and controls are ready.
+  startWelcomeIntro();
 
   // optional perf probe: append ?debug to the URL to see boot timings
   if (/[?&]debug\b/.test(location.search)) {
