@@ -1,0 +1,20 @@
+{
+  "name": "pour-over-focus",
+  "private": true,
+  "description": "Pour Over Focus app shell plus its optional real-time leaderboard service.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node server/src/main.ts",
+    "test": "node --test \"server/test/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  }
+}

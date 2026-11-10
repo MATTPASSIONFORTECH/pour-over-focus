@@ -200,10 +200,13 @@ own row highlighted ("You").
 | `api/health` | GET | Any JSON — used to probe availability |
 | `api/leaderboard` | GET | `{ today: Row[], all: Row[] }` |
 | `api/stream` | GET | Server-Sent Events named `leaderboard`, each `data:` a full snapshot |
-| `api/report` | POST | `{ id, name, minutes, cash }` → snapshot JSON |
+| `api/report` | POST | `{ id, name, minutes, cash, reportId }` → snapshot JSON |
 
 `Row` is `{ id, name, minutes, cash }`. The client sends focus minutes and cash after each
-round, plus a name registration when you set a nickname.
+round, plus a name registration when you set a nickname. Each round's report carries a unique
+`reportId` and is retried up to three times on network or server errors; the server ignores
+replays, so a round is never counted twice. Status codes and limits are in
+[deployment.md](deployment.md#contract).
 
 **Live updates** come from the SSE stream; a **15-second poll** takes over if SSE is blocked, and
 after repeated stream errors it stops reconnecting and shows "○ Polling only". With no backend

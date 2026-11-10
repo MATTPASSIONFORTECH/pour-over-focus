@@ -38,8 +38,14 @@ assets/icons/            192/512 icons, maskable variants, apple-touch-icon (180
 assets/splash/           14 iOS launch images, one per device size/orientation
 assets/img/              three drink photos used on the brew cards
 docs/                    this documentation
-.github/workflows/       Pages deployment
+.github/workflows/       Pages deployment (pages.yml) and service CI (ci.yml)
+server/src/              optional leaderboard service: leaderboard.ts (domain), http.ts,
+                         persist.ts, main.ts. TypeScript run directly by Node 24+
+server/test/             node:test suites, run with `npm test`
 ```
+
+The no-build, no-dependency constraints apply to the app shell. `server/` has no runtime
+dependencies either; `typescript` and `@types/node` are dev-only, for `npm run typecheck`.
 
 ---
 
@@ -200,7 +206,9 @@ break offline.
 
 ## Verification recipes
 
-There is no test runner: the checks that matter are observable in a browser.
+The leaderboard service has automated checks: `npm ci && npm run check` (type-check + tests,
+also run by CI). The app shell has no test runner: the checks that matter are observable in a
+browser.
 
 **Everything referenced exists**
 

@@ -2,6 +2,30 @@
 
 Notable changes to Pour Over Focus. Dates are ISO (`YYYY-MM-DD`).
 
+## 2026-11-10 — Leaderboard service
+
+**Added**
+
+- `server/`: a typed, tested leaderboard service with no runtime dependencies (Node 24+, run
+  with `npm start`) that replaces the inline `server.js` snippet. Features: idempotent reports,
+  input bounds and a daily cap, deterministic ranking, top-50 snapshots, coalesced SSE
+  broadcasts with heartbeat and slow-client eviction, optional atomic JSON persistence
+  (`DATA_FILE`), and graceful shutdown.
+- 23 `node:test` unit and integration tests, plus `.github/workflows/ci.yml` (type-check + tests).
+- `docs/portfolio/`: an engineering case study.
+
+**Fixed** (in the previously documented backend)
+
+- All-time totals reset daily because they shared the daily counters.
+- Retried reports were double counted.
+- Unbounded `minutes`/`cash` were accepted.
+- The static handler served `.git/` and, via `..%2f`, files from sibling directories.
+
+**Changed**
+
+- Each round's report from `index.html` now carries a `reportId` and is retried up to three
+  times on network or `5xx` errors. `sw.js` `VERSION` bumped to `pour-over-focus-v12`.
+
 ## 2026-10-18 — Repository restructure and GitHub Pages
 
 **Added**

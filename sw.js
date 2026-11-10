@@ -9,7 +9,7 @@
      never pinned in the cache for the life of a version
    Bump VERSION to invalidate old caches after an update.
    ============================================================ */
-const VERSION = "pour-over-focus-v11";
+const VERSION = "pour-over-focus-v12";
 const SHELL = "./index.html";          // last-resort offline fallback
 const PRECACHE = [
   "./",

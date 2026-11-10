@@ -210,10 +210,12 @@ The 🏅 leaderboard ranks brewers **today** or **all-time** by focus minutes, h
 your own row. It is powered by a tiny optional backend (`api/health`, `api/leaderboard`,
 `api/stream` over Server-Sent Events, `api/report`), so ranks update live while the modal is open.
 
-You can finish a round with no server at all: reporting is fire-and-forget, and the panel
-simply shows **“○ Offline — start the server”** instead of failing. GitHub Pages is static,
-so the live leaderboard is the one feature that needs you to run
-[the backend](docs/deployment.md#optional-the-leaderboard-backend) yourself.
+You can finish a round with no server at all: reports retry briefly and then give up quietly,
+and the panel simply shows **“○ Offline — start the server”** instead of failing. GitHub Pages
+is static, so the live leaderboard is the one feature that needs you to run
+[the backend](docs/deployment.md#optional-the-leaderboard-backend) yourself: `npm start`
+(Node 24+, no runtime dependencies). Each round carries an idempotency key, so a retry is never
+counted twice. Read the [engineering case study](docs/portfolio/smartsheet-software-engineer-i.md).
 
 </details>
 
@@ -386,11 +388,17 @@ pour-over-focus/
 │   ├── icons/                 # app icons + maskable + apple-touch-icon
 │   ├── splash/                # 14 iOS launch images
 │   └── img/                   # drink photography used on the brew cards
+├── server/                    # optional leaderboard service (TypeScript, Node 24+, tested)
+│   ├── src/                   # domain, HTTP/SSE, persistence, entrypoint
+│   └── test/                  # node:test unit + integration suites
 ├── docs/
 │   ├── features.md            # complete feature reference (tables, prices, mechanics)
 │   ├── deployment.md          # hosting, Pages, offline/caching, leaderboard backend
-│   └── architecture.md        # how the code is organised, and how to extend it
+│   ├── architecture.md        # how the code is organised, and how to extend it
+│   └── portfolio/             # engineering case study for the leaderboard service
 ├── .github/workflows/pages.yml # deploy to GitHub Pages on push to main
+├── .github/workflows/ci.yml   # type-check + test the service on every PR
+├── package.json · tsconfig.json # dev tooling for server/ only; the app needs neither
 ├── .nojekyll                  # stops Jekyll processing on branch-based Pages deploys
 ├── .gitignore
 ├── CHANGELOG.md

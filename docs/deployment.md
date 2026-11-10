@@ -175,102 +175,72 @@ To reset locally: `DevTools → Application → Storage → Clear site data`, th
 
 ## Optional: the leaderboard backend
 
-Everything else works without it. The contract is four endpoints, relative to the app:
+Everything else works without it. The backend lives in [`server/`](../server): a TypeScript
+service with **zero runtime dependencies** that runs directly on Node 24+ (native type
+stripping, so there is no build step). It serves the API and the published app shell from one
+origin, so the relative `api/` URLs resolve beside `index.html`.
+
+```bash
+npm start                                   # → http://127.0.0.1:3000/  (in-memory)
+DATA_FILE=data/board.json npm start         # survive restarts (atomic JSON writes)
+PORT=8080 HOST=0.0.0.0 npm start            # listen publicly
+npm ci && npm run check                     # type-check + unit/integration tests
+```
+
+### Contract
 
 | Endpoint | Method | Body / response |
 | :-- | :-- | :-- |
-| `api/health` | GET | `{ "ok": true }` |
-| `api/leaderboard` | GET | `{ "today": Row[], "all": Row[] }` |
-| `api/stream` | GET (SSE) | `event: leaderboard` + `data: <same snapshot>` |
-| `api/report` | POST | accepts `{ id, name, minutes, cash }`, returns the snapshot |
+| `api/health` | GET | `{ "ok": true, "players": n, "streams": n }` |
+| `api/leaderboard` | GET | `{ "today": Row[], "all": Row[] }` (top 50 each) |
+| `api/stream` | GET (SSE) | `event: leaderboard` + `data: <same snapshot>`; `: ping` heartbeat every 25s |
+| `api/report` | POST | `{ id, name, minutes, cash, reportId? }` → snapshot |
 
-`Row = { id, name, minutes, cash }`, ranked by descending `minutes`, `cash` as the tiebreak.
+`Row = { id, name, minutes, cash }`, ranked by descending `minutes`, then `cash`, then name, so
+every client renders ties identically. `today` uses the server's UTC date.
 
-A dependency-free Node implementation, saved as `server.js` and run with `node server.js`
-(serving the app and the API from the same origin so `api/` resolves beside `index.html`):
+| `api/report` outcome | Status |
+| :-- | :-- |
+| Applied | `200` + snapshot |
+| Replay of a `reportId` already seen for this player | `200` + snapshot + `Idempotent-Replay: true` (not recounted) |
+| Malformed JSON, bad `id`/`reportId`, `minutes` outside 0–120, `cash` outside 0–5 | `400` |
+| Body over 4 KB | `413` |
+| Would push a player past 1,440 focus minutes in one day | `422` |
+| Wrong method on any `api/` route | `405` with `Allow` |
 
-```js
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
+### Delivery semantics
 
-const players = new Map();          // id -> { id, name, minutes, cash, day }
-const streams = new Set();
-const TYPES = { ".html": "text/html", ".js": "text/javascript", ".webmanifest": "application/manifest+json",
-                ".png": "image/png", ".jpg": "image/jpeg", ".css": "text/css" };
+The client generates one `reportId` per finished round and retries up to three times on
+network errors or `5xx`. That makes delivery **at-least-once**; the server remembers the last
+256 `reportId`s per player (persisted with the data file), so each round is counted
+**exactly once**. Reports without a `reportId` are still accepted for older clients.
 
-const today = () => new Date().toISOString().slice(0, 10);
-const rank = rows => rows.sort((a, b) => b.minutes - a.minutes || b.cash - a.cash);
-const bare = ({ id, name, minutes, cash }) => ({ id, name, minutes, cash });   // keep internal fields private
-const snapshot = () => {
-  const all = [...players.values()];
-  return { today: rank(all.filter(p => p.day === today())).map(bare), all: rank(all.slice()).map(bare) };
-};
-const broadcast = () => {
-  const payload = "event: leaderboard\ndata: " + JSON.stringify(snapshot()) + "\n\n";
-  for (const res of streams) res.write(payload);
-};
+Broadcasts are coalesced: a burst of reports in one event-loop turn produces a single
+serialized snapshot for all streams. A stream that buffers more than 1 MB is dropped, and
+`EventSource` reconnects using the server's `retry: 5000` hint.
 
-http.createServer((req, res) => {
-  const url = new URL(req.url, "http://localhost");
-  const json = (code, body) => {
-    res.writeHead(code, { "Content-Type": "application/json", "Cache-Control": "no-store" });
-    res.end(JSON.stringify(body));
-  };
+### What it replaced
 
-  if (url.pathname === "/api/health") return json(200, { ok: true });
-  if (url.pathname === "/api/leaderboard") return json(200, snapshot());
+Earlier versions of this page carried an inline `server.js`. Probing it side by side with the
+new service found:
 
-  if (url.pathname === "/api/stream") {
-    res.writeHead(200, { "Content-Type": "text/event-stream", "Cache-Control": "no-store", Connection: "keep-alive" });
-    res.write("event: leaderboard\ndata: " + JSON.stringify(snapshot()) + "\n\n");
-    streams.add(res);
-    req.on("close", () => streams.delete(res));
-    return;
-  }
+| Defect in the old snippet | Observed | Now |
+| :-- | :-- | :-- |
+| All-time totals reused the daily counters | 25 min yesterday + 25 today → all-time **25** | **50**, separate counters |
+| Retried report counted twice | same report ×2 → **50** min | **25**, replay flagged |
+| No input bounds | `minutes: 1e9` → **200** | **400** |
+| Served the whole working tree | `GET /.git/config` → **200** | **404**, only the files Pages publishes |
+| Prefix containment check (`startsWith(__dirname)`) | `GET /..%2fapp-secrets/env` read a **sibling directory** | **404**, separator-aware check |
+| No SSE heartbeat | idle proxies may close the stream | `: ping` every 25s |
 
-  if (url.pathname === "/api/report" && req.method === "POST") {
-    let body = "";
-    req.on("data", c => { body += c; if (body.length > 4096) req.destroy(); });
-    req.on("end", () => {
-      try {
-        const { id, name, minutes, cash } = JSON.parse(body || "{}");
-        if (!id) return json(400, { error: "id required" });
-        const prev = players.get(id) || { id, name: "", minutes: 0, cash: 0, day: today() };
-        if (prev.day !== today()) { prev.day = today(); prev.minutes = 0; prev.cash = 0; }
-        if (name) prev.name = String(name).slice(0, 24);
-        prev.minutes += Math.max(0, Number(minutes) || 0);
-        prev.cash += Math.max(0, Number(cash) || 0);
-        players.set(id, prev);
-        broadcast();
-        json(200, snapshot());
-      } catch (e) { json(400, { error: "bad json" }); }
-    });
-    return;
-  }
+### Running it in public
 
-  // static files
-  const rel = decodeURIComponent(url.pathname).replace(/^\/+/, "") || "index.html";
-  const file = path.join(__dirname, rel);
-  if (!file.startsWith(__dirname)) { res.writeHead(403).end("forbidden"); return; }
-  fs.readFile(file, (err, data) => {
-    if (err) { res.writeHead(404, { "Content-Type": "text/html" }).end(fs.existsSync("404.html") ? fs.readFileSync("404.html") : "not found"); return; }
-    res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
-    res.end(data);
-  });
-}).listen(3000, () => console.log("café open on http://localhost:3000"));
-```
-
-Notes if you adapt it:
-
-- `id` is a random, client-generated string (`p_…`); names are display-only, so there is no
-  authentication. Treat it as a friendly local leaderboard, not a public competitive one.
-- Daily totals reset when a player's first report of a new day arrives.
-- Serve the backend from the **same origin and path** as the app so the relative `api/` URLs
-  resolve. On GitHub Pages you'd need a separate host (a worker or small server) and a base
-  change in `index.html` where `API` is built.
-- If you deploy this anywhere public, add rate limiting and validate/sanitise names — the client
-  escapes them, but the server should too.
+- `id` is a random, client-generated string (`p_…`); there is no authentication, so treat it as
+  a friendly leaderboard. Bounds and the daily cap limit damage, not identity spoofing.
+- Put it behind a reverse proxy for TLS and per-IP rate limiting. Disable proxy buffering for
+  `api/stream` (the service already sends `X-Accel-Buffering: no` for nginx).
+- On GitHub Pages the API needs a separate host plus a change to where `API` is built in
+  `index.html`, because Pages cannot run the service.
 
 ---
 

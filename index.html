@@ -3429,13 +3429,20 @@ async function lbFetch(path, opts) {
   } catch (e) { return null; }
 }
 
-/* report focus minutes + cash earned; fire-and-forget, offline-safe */
-function reportStats(minutes, cash) {
-  lbFetch(API.report, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: playerId(), name: S.player.name || "", minutes, cash }),
+/* report focus minutes + cash earned; offline-safe, retried on network/5xx errors.
+   One reportId per round lets the server drop replays, so retries never double count. */
+async function reportStats(minutes, cash) {
+  const body = JSON.stringify({
+    id: playerId(), name: S.player.name || "", minutes, cash,
+    reportId: "r_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10),
   });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt) await new Promise(r => setTimeout(r, 2000 * attempt));
+    try {
+      const res = await fetch(API.report, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+      if (res.status < 500) return;         // success, replay, or a 4xx that retrying won't fix
+    } catch (e) { /* offline or no backend: retry */ }
+  }
 }
 
 function lbStatus(msg, live) {

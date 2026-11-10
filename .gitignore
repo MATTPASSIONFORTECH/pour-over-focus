@@ -10,3 +10,6 @@
 # Local scratch
 *.log
 _site/
+
+# Node
+node_modules/
